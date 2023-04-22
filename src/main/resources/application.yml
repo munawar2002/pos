@@ -1,0 +1,30 @@
+spring:
+  main:
+    web-application-type=none: none
+  application:
+    name: POS System
+    ui:
+      title: POS System
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: "jdbc:mysql://localhost:3306/pos?autoreconnect=true"
+    password: "Mjhome#123"
+    username: "root"
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 30000
+    validationQuery: SELECT 1
+  flyway:
+    url: jdbc:mysql://localhost:3306/pos
+    user: "root"
+    password: "Mjhome#123"
+    baselineOnMigrate: true
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
