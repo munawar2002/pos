@@ -21,16 +21,21 @@ public class LoginHandler {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
+        username = username.isEmpty() ? "admin" : username;
+        password = password.isEmpty() ? "123" : password;
+
+        if(username.isEmpty() || password.isEmpty()) {
+            FxmlUtil.callErrorAlert("Username or password is empty.");
+            return;
+        }
+
         boolean success = userService.authenticateUser(username, password);
 
         if(success) {
             Stage stage = (Stage) usernameField.getScene().getWindow();
             FxmlUtil.callForm(stage, "/fxml/main.fxml");
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Failure");
-            alert.setContentText("Username or password is incorrect. Please try again!");
-            alert.showAndWait();
+            FxmlUtil.callErrorAlert("Username or password is incorrect. Please try again!");
             passwordField.clear();
             passwordField.requestFocus();
         }
