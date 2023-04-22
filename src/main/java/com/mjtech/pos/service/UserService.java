@@ -19,29 +19,9 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public boolean authenticateUser(TextField usernameField, PasswordField passwordField) throws IOException {
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-
-        if(optionalUser.isPresent() && username.equals(optionalUser.get().getUsername())
-                && password.equals(optionalUser.get().getPassword())) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setContentText("Login Successfull!!!");
-            alert.showAndWait();
-            Stage stage = (Stage) usernameField.getScene().getWindow();
-
-            FxmlUtil.callForm(stage, "/fxml/main.fxml");
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Failure");
-            alert.setContentText("Username or password is incorrect. Please try again!");
-            alert.showAndWait();
-            passwordField.clear();
-            passwordField.requestFocus();
-        }
-        return true;
+    public boolean authenticateUser(String username, String password) throws IOException {
+        Optional<User> optionalUser = userRepository.findByUsernameAndPassword(username, password);
+        return optionalUser.isPresent();
     }
 
 }

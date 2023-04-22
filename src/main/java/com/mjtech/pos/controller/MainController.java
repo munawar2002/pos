@@ -1,5 +1,7 @@
 package com.mjtech.pos.controller;
 
+import javafx.application.Platform;
+
 public class MainController {
 
 
@@ -12,7 +14,7 @@ public class MainController {
     }
 
     public void closeApplication() {
-        System.out.println("----_ Close application");
+        Platform.exit();
     }
 
 }

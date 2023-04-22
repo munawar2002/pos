@@ -1,5 +1,6 @@
 package com.mjtech.pos.controller;
 
+import com.mjtech.pos.GuiHandler.LoginHandler;
 import com.mjtech.pos.service.UserService;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
@@ -17,14 +18,14 @@ public class LoginController {
     @FXML
     private PasswordField passwordText;
 
-    private final UserService userService;
+    private final LoginHandler loginHandler;
 
-    public LoginController(UserService userService) {
-        this.userService = userService;
+    public LoginController(LoginHandler loginHandler) {
+        this.loginHandler = loginHandler;
     }
 
     public void login() throws IOException {
-        userService.authenticateUser(usernameText, passwordText);
+        loginHandler.authenticateUser(usernameText, passwordText);
     }
 
 }
