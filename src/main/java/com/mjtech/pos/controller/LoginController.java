@@ -6,6 +6,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import org.springframework.stereotype.Controller;
 
+import java.io.IOException;
+
 @Controller
 public class LoginController {
 
@@ -21,10 +23,7 @@ public class LoginController {
         this.userService = userService;
     }
 
-    public void login() {
-        String username = usernameText.getText();
-        String password = passwordText.getText();
-
+    public void login() throws IOException {
         userService.authenticateUser(usernameText, passwordText);
     }
 
