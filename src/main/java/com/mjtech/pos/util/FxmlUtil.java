@@ -12,7 +12,7 @@ import java.io.IOException;
 @UtilityClass
 public class FxmlUtil {
 
-    public void callForm(Stage primaryStage, String formName) throws IOException {
+    public void callMainForm(Stage primaryStage, String formName) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(FxmlUtil.class.getResource(formName));
         Parent root = loader.load();
@@ -20,6 +20,16 @@ public class FxmlUtil {
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.show();
+    }
+
+    public void callForm(Stage stage, String formName) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(FxmlUtil.class.getResource(formName));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.centerOnScreen();
+        stage.show();
     }
 
     public void callErrorAlert(String message) {

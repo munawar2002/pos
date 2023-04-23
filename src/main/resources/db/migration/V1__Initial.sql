@@ -13,5 +13,5 @@ updated_at TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
 UNIQUE(username)
 );
 
-INSERT INTO USERS (username, password, first_name, last_name, email, password_hint)
- values ('admin', '123', 'Admin', 'Munawar', 'abc@gmail.com', '123');
+INSERT INTO USERS (username, password, first_name, last_name, email, password_hint, created_by, updated_by)
+ values ('admin', '123', 'Admin', 'Munawar', 'abc@gmail.com', '123', 'munawar', 'java');

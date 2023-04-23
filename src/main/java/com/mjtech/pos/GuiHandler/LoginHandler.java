@@ -2,7 +2,6 @@ package com.mjtech.pos.GuiHandler;
 
 import com.mjtech.pos.service.UserService;
 import com.mjtech.pos.util.FxmlUtil;
-import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -33,7 +32,7 @@ public class LoginHandler {
 
         if(success) {
             Stage stage = (Stage) usernameField.getScene().getWindow();
-            FxmlUtil.callForm(stage, "/fxml/main.fxml");
+            FxmlUtil.callMainForm(stage, "/fxml/main.fxml");
         } else {
             FxmlUtil.callErrorAlert("Username or password is incorrect. Please try again!");
             passwordField.clear();
