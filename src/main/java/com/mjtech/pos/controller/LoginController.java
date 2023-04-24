@@ -1,7 +1,6 @@
 package com.mjtech.pos.controller;
 
 import com.mjtech.pos.GuiHandler.LoginHandler;
-import com.mjtech.pos.service.UserService;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
