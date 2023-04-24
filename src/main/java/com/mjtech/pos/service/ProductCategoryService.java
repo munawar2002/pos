@@ -32,7 +32,7 @@ public class ProductCategoryService {
         productCategoryRepository.delete(category);
     }
 
-    private ProductCategory getProductCategory(int id) {
+    public ProductCategory getProductCategory(int id) {
         Optional<ProductCategory> optionalProductCategory = productCategoryRepository.findById(id);
         if(optionalProductCategory.isEmpty()) {
             throw new RuntimeException(String.format("Product category does not exist with id [%s] ", id));

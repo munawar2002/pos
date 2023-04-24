@@ -26,8 +26,8 @@ public class LoginHandler {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        username = username.isEmpty() ? "admin" : username;
-        password = password.isEmpty() ? "123" : password;
+   //     username = username.isEmpty() ? "admin" : username;
+     //   password = password.isEmpty() ? "123" : password;
 
         if(username.isEmpty() || password.isEmpty()) {
             FxmlUtil.callErrorAlert("Username or password is empty.");
