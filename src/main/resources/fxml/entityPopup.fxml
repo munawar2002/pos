@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="457.0" prefWidth="691.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane prefHeight="453.0" prefWidth="700.0">
+         <children>
+            <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="431.0" prefWidth="678.0" style="-fx-border-color: green;">
+               <children>
+                  <ButtonBar layoutX="151.0" layoutY="169.0" prefHeight="45.0" prefWidth="505.0" />
+                  <AnchorPane layoutX="4.0" layoutY="80.0" prefHeight="349.0" prefWidth="656.0" style="-fx-border-color: green;">
+                     <children>
+                        <TextField fx:id="nameTextField" layoutX="99.0" layoutY="14.0" onAction="#textFieldAction" prefHeight="26.0" prefWidth="358.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="14.0" layoutY="14.0" prefHeight="26.0" prefWidth="72.0" text="Name:">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="searchBtn" layoutX="470.0" layoutY="15.0" mnemonicParsing="false" onAction="#searchEntity" prefHeight="26.0" prefWidth="171.0" style="-fx-font-weight: bold;" text="Search">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Button>
+                        <TableView fx:id="popupTable" layoutX="6.0" layoutY="53.0" prefHeight="292.0" prefWidth="643.0">
+                          <columns>
+                            <TableColumn prefWidth="75.0" text="Id" />
+                            <TableColumn prefWidth="273.0" text="Name" />
+                              <TableColumn prefWidth="286.0" text="Description" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+      <Label fx:id="entityNameLabel" alignment="CENTER" layoutX="17.0" layoutY="23.0" prefHeight="68.0" prefWidth="671.0" text="EntityName" textFill="#076b29" underline="true">
+         <font>
+            <Font name="Arial Bold" size="25.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

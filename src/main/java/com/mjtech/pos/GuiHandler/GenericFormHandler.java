@@ -3,6 +3,7 @@ package com.mjtech.pos.GuiHandler;
 import com.mjtech.pos.constant.GenericFormOperation;
 import com.mjtech.pos.constant.GenericFormValue;
 import com.mjtech.pos.dto.GenericFromDto;
+import com.mjtech.pos.entity.ProductCategory;
 import com.mjtech.pos.mapper.GenericFormDtoMapper;
 import com.mjtech.pos.service.ProductCategoryService;
 import javafx.collections.FXCollections;
@@ -36,6 +37,15 @@ public class GenericFormHandler {
             ProductCategoryService productCategoryService = applicationContext.getBean(ProductCategoryService.class);
             productCategoryService.performOperation(operation, name, description, selectedId);
         }
+    }
+
+    public List<GenericFromDto> searchEntity(String formName, String text) {
+        if (formName.equals(GenericFormValue.PRODUCT_CATEGORY.getValue())) {
+            ProductCategoryService productCategoryService = applicationContext.getBean(ProductCategoryService.class);
+            List<ProductCategory> productCategories = productCategoryService.search(text, null);
+            return GenericFormDtoMapper.mapToGenericFormDtos(productCategories);
+        }
+        return null;
     }
 
     public void search(String formName, TextField nameTextField, TextField descriptionTextField, TableView<GenericFromDto> table) {
@@ -81,6 +91,8 @@ public class GenericFormHandler {
 
             }
         }
+
+        table.getColumns().forEach(col -> col.setCellValueFactory(new PropertyValueFactory<>(col.getText().toLowerCase())));
 
         table.setItems(FXCollections.observableArrayList(genericFromDtos));
     }

@@ -11,20 +11,19 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="700.0" prefWidth="1200.0" style="-fx-background-color: lightgray;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mjtech.pos.controller.ProductController">
    <children>
       <AnchorPane layoutX="-1.0" prefHeight="700.0" prefWidth="1200.0">
          <children>
             <AnchorPane layoutX="5.0" layoutY="6.0" prefHeight="688.0" prefWidth="570.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
                <children>
-                  <TextField layoutX="102.0" layoutY="55.0" prefHeight="26.0" prefWidth="452.0" />
+                  <TextField fx:id="codeTextField" layoutX="105.0" layoutY="55.0" prefHeight="26.0" prefWidth="452.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="18.0" layoutY="55.0" prefHeight="26.0" prefWidth="80.0" text="Code:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="105.0" layoutY="101.0" prefHeight="26.0" prefWidth="452.0" />
+                  <TextField fx:id="nameTextField" layoutX="105.0" layoutY="101.0" prefHeight="26.0" prefWidth="452.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="21.0" layoutY="101.0" prefHeight="26.0" prefWidth="80.0" text="Name:">
                      <font>
                         <Font size="17.0" />
@@ -35,54 +34,53 @@
                         <Font name="Arial Bold" size="25.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="102.0" layoutY="148.0" prefHeight="26.0" prefWidth="452.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="18.0" layoutY="148.0" prefHeight="26.0" prefWidth="80.0" text="Category:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="171.0" layoutY="195.0" prefHeight="26.0" prefWidth="382.0" />
+                  <TextField fx:id="companyTextField" layoutX="171.0" layoutY="195.0" prefHeight="26.0" prefWidth="382.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="17.0" layoutY="195.0" prefHeight="26.0" prefWidth="143.0" text="Product Company:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="102.0" layoutY="239.0" prefHeight="26.0" prefWidth="452.0" />
-                  <Label alignment="CENTER_RIGHT" layoutX="18.0" layoutY="239.0" prefHeight="26.0" prefWidth="80.0" text="Buy Price:">
+                  <TextField fx:id="buyPriceTextField" layoutX="101.0" layoutY="287.0" prefHeight="26.0" prefWidth="452.0" />
+                  <Label alignment="CENTER_RIGHT" layoutX="17.0" layoutY="287.0" prefHeight="26.0" prefWidth="80.0" text="Buy Price:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="102.0" layoutY="279.0" prefHeight="26.0" prefWidth="452.0" />
-                  <Label alignment="CENTER_RIGHT" layoutX="18.0" layoutY="279.0" prefHeight="26.0" prefWidth="80.0" text="Sell Price:">
+                  <TextField fx:id="sellPriceTextField" layoutX="101.0" layoutY="331.0" prefHeight="26.0" prefWidth="452.0" />
+                  <Label alignment="CENTER_RIGHT" layoutX="17.0" layoutY="331.0" prefHeight="26.0" prefWidth="80.0" text="Sell Price:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <ImageView fitHeight="282.0" fitWidth="452.0" layoutX="103.0" layoutY="317.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fitHeight="221.0" fitWidth="452.0" layoutX="103.0" layoutY="378.0" pickOnBounds="true" preserveRatio="true" />
                   <ButtonBar layoutX="8.0" layoutY="627.0" prefHeight="38.0" prefWidth="554.0" style="-fx-border-color: green;">
                      <buttons>
-                      <Button mnemonicParsing="false" text="Save">
+                      <Button mnemonicParsing="false" onAction="#saveBtn" prefHeight="25.0" prefWidth="147.0" text="Save">
                            <font>
                               <Font name="Arial Bold" size="13.0" />
                            </font>
                         </Button>
-                        <Button mnemonicParsing="false" text="Edit">
+                        <Button mnemonicParsing="false" onAction="#editBtn" text="Edit">
                            <font>
                               <Font name="Arial Bold" size="13.0" />
                            </font>
                         </Button>
-                        <Button mnemonicParsing="false" text="Clear">
+                        <Button mnemonicParsing="false" onAction="#clearBtn" text="Clear">
                            <font>
                               <Font name="Arial Bold" size="13.0" />
                            </font>
                         </Button>
-                        <Button mnemonicParsing="false" text="Change Picture">
+                        <Button mnemonicParsing="false" onAction="#browseBtn" text="Browse">
                            <font>
                               <Font name="Arial Bold" size="13.0" />
                            </font>
                         </Button>
-                        <Button mnemonicParsing="false" text="Delete">
+                        <Button mnemonicParsing="false" onAction="#deleteBtn" text="Delete">
                            <font>
                               <Font name="Arial Bold" size="13.0" />
                            </font>
@@ -92,29 +90,36 @@
                         <Insets bottom="5.0" right="15.0" top="5.0" />
                      </padding>
                   </ButtonBar>
+                  <TextField fx:id="supplierTextField" layoutX="104.0" layoutY="239.0" prefHeight="26.0" prefWidth="452.0" />
+                  <Label alignment="CENTER_RIGHT" layoutX="15.0" layoutY="239.0" prefHeight="26.0" prefWidth="80.0" text="Supplier:">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="categoryTextField" layoutX="103.0" layoutY="148.0" onAction="#categoryPopup" prefHeight="26.0" prefWidth="452.0" />
                </children>
             </AnchorPane>
             <AnchorPane layoutX="582.0" layoutY="6.0" prefHeight="688.0" prefWidth="612.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
                <children>
-                  <TextField layoutX="107.0" layoutY="65.0" prefHeight="26.0" prefWidth="180.0" />
+                  <TextField fx:id="codeSearchTextField" layoutX="107.0" layoutY="65.0" prefHeight="26.0" prefWidth="180.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="7.0" layoutY="65.0" prefHeight="26.0" prefWidth="80.0" text="Code:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="394.0" layoutY="65.0" prefHeight="26.0" prefWidth="194.0" />
+                  <TextField fx:id="nameSearchTextField" layoutX="394.0" layoutY="65.0" prefHeight="26.0" prefWidth="194.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="300.0" layoutY="65.0" prefHeight="26.0" prefWidth="80.0" text="Name:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="107.0" layoutY="112.0" prefHeight="26.0" prefWidth="180.0" />
+                  <TextField fx:id="categorySearchTextField" layoutX="107.0" layoutY="112.0" prefHeight="26.0" prefWidth="180.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="12.0" layoutY="112.0" prefHeight="26.0" prefWidth="80.0" text="Category:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="394.0" layoutY="112.0" prefHeight="26.0" prefWidth="194.0" />
+                  <TextField fx:id="companySearchTextField" layoutX="394.0" layoutY="112.0" prefHeight="26.0" prefWidth="194.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="299.0" layoutY="112.0" prefHeight="26.0" prefWidth="80.0" text="Company:">
                      <font>
                         <Font size="17.0" />
@@ -125,33 +130,40 @@
                         <Font name="Arial Bold" size="25.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="106.0" layoutY="155.0" prefHeight="26.0" prefWidth="180.0" />
+                  <TextField fx:id="buyPriceSearchTextField" layoutX="107.0" layoutY="155.0" prefHeight="26.0" prefWidth="180.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="3.0" layoutY="155.0" prefHeight="26.0" prefWidth="88.0" text="Buy Price:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="393.0" layoutY="155.0" prefHeight="26.0" prefWidth="88.0" />
+                  <TextField fx:id="sellPriceSearchTextField" layoutX="394.0" layoutY="155.0" prefHeight="26.0" prefWidth="194.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="298.0" layoutY="155.0" prefHeight="26.0" prefWidth="80.0" text="Sell Price:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TableView layoutX="14.0" layoutY="196.0" prefHeight="483.0" prefWidth="588.0">
+                  <TableView layoutX="14.0" layoutY="235.0" prefHeight="444.0" prefWidth="588.0">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="Code" />
-                      <TableColumn prefWidth="147.0" text="Name" />
-                        <TableColumn prefWidth="104.0" text="Category" />
-                        <TableColumn prefWidth="112.0" text="Company" />
-                        <TableColumn prefWidth="77.0" text="Buy" />
-                        <TableColumn prefWidth="77.0" text="Sell" />
+                      <TableColumn prefWidth="59.0" text="Code" />
+                      <TableColumn prefWidth="129.0" text="Name" />
+                        <TableColumn prefWidth="83.0" text="Category" />
+                        <TableColumn prefWidth="87.0" text="Company" />
+                        <TableColumn prefWidth="103.0" text="Supplier" />
+                        <TableColumn minWidth="0.0" prefWidth="65.0" text="Sell" />
+                        <TableColumn minWidth="0.0" prefWidth="60.0" text="Buy" />
                     </columns>
                   </TableView>
-                  <Button layoutX="491.0" layoutY="156.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="96.0" text="Search">
+                  <Button layoutX="311.0" layoutY="196.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="187.0" text="Search">
                      <font>
                         <Font name="Arial Bold" size="13.0" />
                      </font>
                   </Button>
+                  <TextField fx:id="supplierSearchTextField" layoutX="107.0" layoutY="196.0" prefHeight="26.0" prefWidth="180.0" />
+                  <Label alignment="CENTER_RIGHT" layoutX="12.0" layoutY="196.0" prefHeight="26.0" prefWidth="80.0" text="Supplier:">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
                </children>
             </AnchorPane>
          </children>
