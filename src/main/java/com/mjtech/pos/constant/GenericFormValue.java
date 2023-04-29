@@ -1,7 +1,9 @@
 package com.mjtech.pos.constant;
 
 public enum GenericFormValue {
-    PRODUCT_CATEGORY("Product Category");
+    PRODUCT_CATEGORY("Product Category"),
+    PRODUCT_COMPANY("Product Company"),
+    SUPPLIER("Supplier");
 
     private String value;
 

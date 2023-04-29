@@ -12,37 +12,20 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "PRODUCT")
+@Table(name = "PRODUCT_PHOTO")
 @Builder
-public class Product {
+public class ProductPhoto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "code")
-    private String code;
+    @Column(name = "product_id")
+    private int productId;
 
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "quantity")
-    private int quantity;
-
-    @Column(name = "product_company_id")
-    private int productCompanyId;
-
-    @Column(name = "category_id")
-    private int categoryId;
-
-    @Column(name = "supplier_id")
-    private int supplierId;
-
-    @Column(name = "buy_price")
-    private Double buyPrice;
-
-    @Column(name = "sell_price")
-    private Double sellPrice;
+    @Lob
+    @Column(name = "image", columnDefinition = "longblob")
+    private byte[] image;
 
     @Column(name = "created_by")
     private String createdBy;

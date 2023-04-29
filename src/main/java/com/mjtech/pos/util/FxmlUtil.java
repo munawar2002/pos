@@ -4,18 +4,23 @@ import com.mjtech.pos.GuiHandler.GenericFormHandler;
 import com.mjtech.pos.controller.GenericFormController;
 import com.mjtech.pos.controller.PopupController;
 import com.mjtech.pos.dto.GenericFromDto;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @UtilityClass
@@ -91,6 +96,10 @@ public class FxmlUtil {
         callAlert(Alert.AlertType.WARNING, "Warning", message);
     }
 
+    public void callInformationAlert(String message) {
+        callAlert(Alert.AlertType.INFORMATION, "Information", message);
+    }
+
     public void callAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -104,6 +113,47 @@ public class FxmlUtil {
         alert.setContentText(message);
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.OK;
+    }
+
+    public String validateEmptyTextFields(Map<TextField, String> map) {
+        for (Map.Entry<TextField,String> entry : map.entrySet()) {
+            if(StringUtils.isEmpty(entry.getKey().getText())) {
+                return String.format("Validation Failed! Please fill the required field %s", entry.getValue());
+            }
+        }
+        return null;
+    }
+
+    public String validateEmptyIds(Map<String, Integer> map) {
+        for (Map.Entry<String,Integer> entry : map.entrySet()) {
+            if(entry.getValue() == null) {
+                return String.format("Validation Failed! Please fill the required field %s", entry.getKey());
+            }
+        }
+        return null;
+    }
+
+    public String validateDouble(Map<TextField, String> map) {
+        for (Map.Entry<TextField,String> entry : map.entrySet()) {
+            try {
+                Double.parseDouble(entry.getKey().getText());
+            } catch (NumberFormatException e) {
+                return String.format("Validation Failed! Provided input is not a number for %s", entry.getValue());
+            }
+        }
+        return null;
+    }
+
+    public <T> void populateTableView(TableView<T> tableView, List<T> items, Map<String, String> columnMap) {
+        for (Map.Entry<String,String> entry : columnMap.entrySet()) {
+            tableView.getColumns().forEach(col -> {
+                if(col.getText().equalsIgnoreCase(entry.getKey())) {
+                    col.setCellValueFactory(new PropertyValueFactory<>(entry.getValue()));
+                }
+            });
+        }
+
+        tableView.setItems(FXCollections.observableList(items));
     }
 
 }
