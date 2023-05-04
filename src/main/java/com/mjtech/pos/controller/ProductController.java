@@ -238,6 +238,7 @@ public class ProductController implements Initializable {
         controller.setEntityName(GenericFormValue.PRODUCT_CATEGORY.getValue());
         controller.setValueToSearch(categoryTextField.getText());
         FxmlUtil.callPopupForm(genericFormHandler, controller, applicationContext);
+        if(controller.getSelectedEntity() == null) return;
         categoryTextField.setText(controller.getSelectedEntity().getName());
         this.selectedCategory = controller.getSelectedEntity();
         companyTextField.requestFocus();
@@ -248,6 +249,7 @@ public class ProductController implements Initializable {
         controller.setEntityName(GenericFormValue.SUPPLIER.getValue());
         controller.setValueToSearch(supplierTextField.getText());
         FxmlUtil.callPopupForm(genericFormHandler, controller, applicationContext);
+        if(controller.getSelectedEntity() == null) return;
         supplierTextField.setText(controller.getSelectedEntity().getName());
         this.selectedSupplier = controller.getSelectedEntity();
         buyPriceTextField.requestFocus();
@@ -258,6 +260,7 @@ public class ProductController implements Initializable {
         controller.setEntityName(GenericFormValue.PRODUCT_COMPANY.getValue());
         controller.setValueToSearch(companyTextField.getText());
         FxmlUtil.callPopupForm(genericFormHandler, controller, applicationContext);
+        if(controller.getSelectedEntity() == null) return;
         companyTextField.setText(controller.getSelectedEntity().getName());
         this.selectedCompany = controller.getSelectedEntity();
         supplierTextField.requestFocus();
@@ -268,6 +271,7 @@ public class ProductController implements Initializable {
         controller.setEntityName(GenericFormValue.PRODUCT_CATEGORY.getValue());
         controller.setValueToSearch(categorySearchTextField.getText());
         FxmlUtil.callPopupForm(genericFormHandler, controller, applicationContext);
+        if(controller.getSelectedEntity() == null) return;
         categorySearchTextField.setText(controller.getSelectedEntity().getName());
         this.selectedSearchCategory = controller.getSelectedEntity();
         companySearchTextField.requestFocus();
@@ -278,6 +282,7 @@ public class ProductController implements Initializable {
         controller.setEntityName(GenericFormValue.SUPPLIER.getValue());
         controller.setValueToSearch(supplierSearchTextField.getText());
         FxmlUtil.callPopupForm(genericFormHandler, controller, applicationContext);
+        if(controller.getSelectedEntity() == null) return;
         supplierSearchTextField.setText(controller.getSelectedEntity().getName());
         this.selectedSearchSupplier = controller.getSelectedEntity();
     }
@@ -287,6 +292,7 @@ public class ProductController implements Initializable {
         controller.setEntityName(GenericFormValue.PRODUCT_COMPANY.getValue());
         controller.setValueToSearch(companySearchTextField.getText());
         FxmlUtil.callPopupForm(genericFormHandler, controller, applicationContext);
+        if(controller.getSelectedEntity() == null) return;
         companySearchTextField.setText(controller.getSelectedEntity().getName());
         this.selectedSearchCompany = controller.getSelectedEntity();
         buyPriceSearchTextField.requestFocus();
