@@ -1,8 +1,7 @@
 package com.mjtech.pos.constant;
 
-public enum OrderStatus {
+public enum InvoiceStatus {
     CREATED,
-    PAYMENT_PENDING,
     PAID,
     IN_PROGRESS,
     COMPLETED,

@@ -1,7 +1,6 @@
 package com.mjtech.pos.entity;
 
 
-import com.mjtech.pos.constant.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,39 +13,21 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ORDER")
+@Table(name = "INVOICE_DETAIL")
 @Builder
-public class Order {
+public class InvoiceDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "customer_id")
-    private int customerId;
+    @Column(name = "order_id")
+    private int invoiceId;
 
-    @Column(name = "status")
-    private OrderStatus status;
+    @Column(name = "product_id")
+    private int productId;
 
-    @Column(name = "order_date")
-    private Date orderDate;
-
-    @Column(name = "amount")
-    private Double amount;
-
-    @Column(name = "is_invoiced")
-    private boolean isInvoiced;
-
-    @Column(name = "is_refunded")
-    private boolean isRefunded;
-
-    @Column(name = "remarks")
-    private String remarks;
-
-    @Column(name = "refund_amount")
-    private Double refundAmount;
-
-    @Column(name = "STATUS_CHANGE_DATE")
-    private Date statusChangeDate;
+    @Column(name = "quantity")
+    private int quantity;
 
     @Column(name = "created_by")
     private String createdBy;

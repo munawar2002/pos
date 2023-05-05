@@ -1,6 +1,7 @@
 package com.mjtech.pos.entity;
 
 
+import com.mjtech.pos.constant.InvoiceStatus;
 import com.mjtech.pos.constant.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,9 +15,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ORDER")
+@Table(name = "INVOICE")
 @Builder
-public class Order {
+public class Invoice {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -24,17 +26,17 @@ public class Order {
     @Column(name = "customer_id")
     private int customerId;
 
-    @Column(name = "status")
-    private OrderStatus status;
+    @Column(name = "order_id")
+    private int orderId;
 
-    @Column(name = "order_date")
-    private Date orderDate;
+    @Column(name = "status")
+    private InvoiceStatus status;
+
+    @Column(name = "invoice_date")
+    private Date invoiceDate;
 
     @Column(name = "amount")
     private Double amount;
-
-    @Column(name = "is_invoiced")
-    private boolean isInvoiced;
 
     @Column(name = "is_refunded")
     private boolean isRefunded;
