@@ -25,6 +25,7 @@ public class Order {
     private int customerId;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     @Column(name = "order_date")

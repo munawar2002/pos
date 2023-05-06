@@ -23,7 +23,7 @@
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="customerTextField" layoutX="101.0" layoutY="101.0" prefHeight="26.0" prefWidth="452.0" />
+                  <TextField fx:id="customerTextField" layoutX="101.0" layoutY="101.0" onAction="#customerPopup" prefHeight="26.0" prefWidth="452.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="5.0" layoutY="101.0" prefHeight="26.0" prefWidth="88.0" text="Customer:">
                      <font>
                         <Font size="17.0" />

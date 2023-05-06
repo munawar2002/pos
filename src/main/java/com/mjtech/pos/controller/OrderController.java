@@ -1,15 +1,27 @@
 package com.mjtech.pos.controller;
 
+import com.mjtech.pos.constant.Gender;
+import com.mjtech.pos.entity.Customer;
 import com.mjtech.pos.entity.Invoice;
 import com.mjtech.pos.entity.InvoiceDetail;
 import com.mjtech.pos.entity.Order;
+import com.mjtech.pos.service.CustomerService;
+import com.mjtech.pos.util.FxmlUtil;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
 
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+
 @Controller
-public class OrderController {
+public class OrderController implements Initializable {
 
     @FXML
     private TextField orderNoTextField;
@@ -50,6 +62,13 @@ public class OrderController {
     @FXML
     private TableView<InvoiceDetail> invoiceTable;
 
+    @Autowired
+    private ConfigurableApplicationContext applicationContext;
+
+    @Autowired
+    private CustomerService customerService;
+
+    private Customer selectedCustomer;
 
     @FXML
     public void saveOrderBtn() {
@@ -91,4 +110,24 @@ public class OrderController {
 
     }
 
+    @FXML
+    public void customerPopup() {
+        CustomerPopupController controller = applicationContext.getBean(CustomerPopupController.class);
+        FxmlUtil.callPopupForm("/fxml/customerPopup.fxml", controller, applicationContext);
+        if(controller.getSelectedCustomer() == null) return;
+        customerTextField.setText(controller.getSelectedCustomer().getFullName());
+        this.selectedCustomer = controller.getSelectedCustomer();
+        productTextField.requestFocus();
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        List<Customer> customers = customerService.searchCustomer("Mr General", Gender.MALE.name(),
+                "", "");
+        if(!customers.isEmpty()) {
+            this.selectedCustomer = customers.get(0);
+        }
+        customerTextField.setText(selectedCustomer.getFullName());
+        Platform.runLater(() -> productTextField.requestFocus());
+    }
 }

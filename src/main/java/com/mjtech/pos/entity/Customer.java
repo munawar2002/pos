@@ -30,6 +30,7 @@ public class Customer {
     private String fullName;
 
     @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Column(name = "contact_no")

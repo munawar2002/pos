@@ -1,6 +1,7 @@
 package com.mjtech.pos.util;
 
 import com.mjtech.pos.GuiHandler.GenericFormHandler;
+import com.mjtech.pos.controller.ControllerInterface;
 import com.mjtech.pos.controller.GenericFormController;
 import com.mjtech.pos.controller.PopupController;
 import com.mjtech.pos.dto.GenericFromDto;
@@ -85,6 +86,23 @@ public class FxmlUtil {
             stage.showAndWait();
         } catch (IOException e) {
             throw new RuntimeException(String.format("Failed while opening popup form for %s", controller.getEntityName()), e);
+        }
+    }
+
+    public void callPopupForm(String formName, ControllerInterface controller, ConfigurableApplicationContext context) {
+        try {
+            Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(FxmlUtil.class.getResource(formName));
+            loader.setControllerFactory(context::getBean);
+            loader.setController(controller);
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.showAndWait();
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("Failed while opening popup form for %s", formName), e);
         }
     }
 

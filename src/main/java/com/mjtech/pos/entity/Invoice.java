@@ -30,6 +30,7 @@ public class Invoice {
     private int orderId;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private InvoiceStatus status;
 
     @Column(name = "invoice_date")
