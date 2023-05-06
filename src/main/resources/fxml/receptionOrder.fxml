@@ -70,14 +70,14 @@
                   </Label>
                   <AnchorPane layoutX="8.0" layoutY="138.0" prefHeight="482.0" prefWidth="554.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
                      <children>
-                        <TextField fx:id="productTextField" layoutX="93.0" layoutY="14.0" onAction="#productPopup" prefHeight="26.0" prefWidth="302.0" />
+                        <TextField fx:id="productTextField" layoutX="93.0" layoutY="14.0" onAction="#productPopup" prefHeight="26.0" prefWidth="237.0" />
                         <Label alignment="CENTER_RIGHT" layoutX="9.0" layoutY="14.0" prefHeight="26.0" prefWidth="80.0" text="Product:">
                            <font>
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="quantityTextField" layoutX="472.0" layoutY="14.0" prefHeight="26.0" prefWidth="73.0" />
-                        <Label alignment="CENTER_RIGHT" layoutX="397.0" layoutY="14.0" prefHeight="26.0" prefWidth="66.0" text="Qty:">
+                        <TextField fx:id="quantityTextField" layoutX="394.0" layoutY="14.0" onAction="#addItemInOrderTable" prefHeight="26.0" prefWidth="73.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="336.0" layoutY="14.0" prefHeight="26.0" prefWidth="46.0" text="Qty:">
                            <font>
                               <Font size="17.0" />
                            </font>
@@ -91,6 +91,11 @@
                               <TableColumn minWidth="0.0" prefWidth="96.0" text="Total" />
                            </columns>
                         </TableView>
+                        <Button layoutX="476.0" layoutY="15.0" mnemonicParsing="false" onAction="#addItemInOrderTable" prefHeight="26.0" prefWidth="66.0" text="Add">
+                           <font>
+                              <Font name="Arial Bold" size="14.0" />
+                           </font>
+                        </Button>
                      </children>
                   </AnchorPane>
                </children>

@@ -34,7 +34,8 @@ public class ProductService {
                                         Integer supplierId,
                                         Integer quantity,
                                         Double buyPrice,
-                                        Double sellPrice) {
+                                        Double sellPrice,
+                                        List<Integer> ignoreProductIds) {
 
         Specification<Product> specification = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -79,7 +80,7 @@ public class ProductService {
         List<Product> products = productRepository.findAll(specification, Pageable.unpaged()).getContent();
 
         List<ProductDto> productDtos = new ArrayList<>();
-        products.forEach(product -> {
+        products.stream().filter(product -> !ignoreProductIds.contains(product.getId())).forEach(product -> {
             Supplier supplier = supplierRepository.findById(product.getSupplierId())
                     .orElseThrow(() -> new RuntimeException(String.format("Supplier not found with id %s", product.getSupplierId())));
 

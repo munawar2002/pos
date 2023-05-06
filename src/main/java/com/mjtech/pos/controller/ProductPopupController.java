@@ -4,6 +4,7 @@ import com.mjtech.pos.GuiHandler.GenericFormHandler;
 import com.mjtech.pos.GuiHandler.ProductHandler;
 import com.mjtech.pos.constant.GenericFormValue;
 import com.mjtech.pos.dto.GenericFromDto;
+import com.mjtech.pos.dto.OrderTableDto;
 import com.mjtech.pos.dto.ProductDto;
 import com.mjtech.pos.util.FxmlUtil;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 @Controller
@@ -60,8 +62,14 @@ public class ProductPopupController implements ControllerInterface, Initializabl
 
     private ProductDto selectedProduct;
 
+    private List<OrderTableDto> orderTableDtoList;
+
     public ProductDto getSelectedProduct() {
         return selectedProduct;
+    }
+
+    public void setOrderTableDtoList(List<OrderTableDto> orderTableDtoList) {
+        this.orderTableDtoList = orderTableDtoList;
     }
 
     @FXML
@@ -84,9 +92,11 @@ public class ProductPopupController implements ControllerInterface, Initializabl
             selectedSearchCategory.setId(null);
         }
 
+        List<Integer> productIds = orderTableDtoList.stream().map(OrderTableDto::getProductId).toList();
+
         productHandler.searchProduct(codeSearchTextField, nameSearchTextField,
                 selectedSearchCategory.getId(), selectedSearchCompany.getId(), selectedSearchSupplier.getId(),
-                buyPriceSearchTextField, sellPriceSearchTextField, quantitySearchTextField, productTable);
+                buyPriceSearchTextField, sellPriceSearchTextField, quantitySearchTextField, productTable, productIds);
         productTable.requestFocus();
     }
 

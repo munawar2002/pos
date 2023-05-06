@@ -13,10 +13,7 @@ import javafx.scene.control.TextField;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @AllArgsConstructor
@@ -115,12 +112,28 @@ public class ProductHandler {
                               TextField sellPriceTextField,
                               TextField quantityTextField,
                               TableView<ProductDto> productTableView) {
+        searchProduct(codeTextField, nameTextField, categoryId, productCompanyId, supplierId, buyPriceTextField,
+                sellPriceTextField, quantityTextField, productTableView, null);
+    }
+
+    public void searchProduct(TextField codeTextField,
+                              TextField nameTextField,
+                              Integer categoryId,
+                              Integer productCompanyId,
+                              Integer supplierId,
+                              TextField buyPriceTextField,
+                              TextField sellPriceTextField,
+                              TextField quantityTextField,
+                              TableView<ProductDto> productTableView,
+                              List<Integer> ignoreProductIds) {
+        ignoreProductIds = ignoreProductIds == null ? new ArrayList<>() : ignoreProductIds;
+
         Double buyPrice = buyPriceTextField.getText().isEmpty() ? null :  Double.parseDouble(buyPriceTextField.getText());
         Double sellPrice = sellPriceTextField.getText().isEmpty() ? null :  Double.parseDouble(sellPriceTextField.getText());
         Integer quantity = quantityTextField.getText().isEmpty() ? null : Integer.parseInt(quantityTextField.getText());
 
         List<ProductDto> productDtos = productService.searchProducts(codeTextField.getText(), nameTextField.getText(), categoryId, productCompanyId,
-                supplierId, quantity, buyPrice, sellPrice);
+                supplierId, quantity, buyPrice, sellPrice, ignoreProductIds);
 
         var columnMap = Map.of("Code", "code",
                 "Name", "name",
