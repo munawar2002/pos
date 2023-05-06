@@ -5,7 +5,6 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: gray;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mjtech.pos.controller.MainController">
    <children>
       <MenuBar fx:id="menuBar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -15,9 +14,9 @@
               <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" onAction="#closeApplication" text="Exit" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Order">
+          <Menu mnemonicParsing="false" text="Order Entry">
             <items>
-              <MenuItem fx:id="orderMenuItem" mnemonicParsing="false" onAction="#newOrderForm" text="Order Entry" />
+              <MenuItem fx:id="orderMenuItem" mnemonicParsing="false" onAction="#receptionOrderForm" text="Reception Order" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Inventory">

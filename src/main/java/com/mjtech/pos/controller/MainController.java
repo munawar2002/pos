@@ -24,24 +24,23 @@ public class MainController {
         this.applicationContext = applicationContext;
     }
 
-
-    public void newOrderForm() {
-        System.out.println("----_ Selected new order form");
-    }
-
     public void productForm() throws IOException {
-        secondaryStage = new Stage();
-        FxmlUtil.callForm(secondaryStage, "/fxml/product.fxml", applicationContext);
+        Stage productStage = new Stage();
+        FxmlUtil.callForm(productStage, "/fxml/product.fxml", applicationContext);
     }
 
     public void productCategoryForm() throws IOException {
         GenericFormController genericFormController = applicationContext.getBean(GenericFormController.class);
         genericFormController.setFormName(GenericFormValue.PRODUCT_CATEGORY.getValue());
 
-        secondaryStage = new Stage();
-        FxmlUtil.callGenericForm(secondaryStage, "/fxml/genericForm.fxml", genericFormController, applicationContext);
+        Stage productCategoryStage = new Stage();
+        FxmlUtil.callGenericForm(productCategoryStage, "/fxml/genericForm.fxml", genericFormController, applicationContext);
     }
 
+    public void receptionOrderForm() throws IOException {
+        Stage receptionOrderStage = new Stage();
+        FxmlUtil.callForm(receptionOrderStage, "/fxml/receptionOrder.fxml", applicationContext);
+    }
 
     public void closeApplication() {
         Platform.exit();
