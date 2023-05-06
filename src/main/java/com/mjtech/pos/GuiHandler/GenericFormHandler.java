@@ -66,6 +66,7 @@ public class GenericFormHandler {
         String description = descriptionTextField.getText();
 
         populateTable(formName, table, name, description);
+        table.requestFocus();
     }
 
     private void populateTable(String formName, TableView<GenericFromDto> table, String name, String description) {

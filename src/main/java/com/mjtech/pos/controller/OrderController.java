@@ -1,6 +1,7 @@
 package com.mjtech.pos.controller;
 
 import com.mjtech.pos.constant.Gender;
+import com.mjtech.pos.dto.ProductDto;
 import com.mjtech.pos.entity.Customer;
 import com.mjtech.pos.entity.Invoice;
 import com.mjtech.pos.entity.InvoiceDetail;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 @Controller
-public class OrderController implements Initializable {
+public class OrderController implements ControllerInterface, Initializable {
 
     @FXML
     private TextField orderNoTextField;
@@ -69,6 +70,7 @@ public class OrderController implements Initializable {
     private CustomerService customerService;
 
     private Customer selectedCustomer;
+    private ProductDto selectedProduct;
 
     @FXML
     public void saveOrderBtn() {
@@ -118,6 +120,16 @@ public class OrderController implements Initializable {
         customerTextField.setText(controller.getSelectedCustomer().getFullName());
         this.selectedCustomer = controller.getSelectedCustomer();
         productTextField.requestFocus();
+    }
+
+    @FXML
+    public void productPopup() {
+        ProductPopupController controller = applicationContext.getBean(ProductPopupController.class);
+        FxmlUtil.callPopupForm("/fxml/productPopup.fxml", controller, applicationContext);
+        if(controller.getSelectedProduct() == null) return;
+        productTextField.setText(controller.getSelectedProduct().getCode() + " - " + controller.getSelectedProduct().getName());
+        this.selectedProduct = controller.getSelectedProduct();
+        quantityTextField.requestFocus();
     }
 
     @Override
