@@ -36,7 +36,7 @@ public class OrderService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Invoice saveOrder(Customer customer, List<OrderTableDto> orderTableDtos) {
-        Double total = orderTableDtos.stream().mapToDouble(OrderTableDto::getTotal).sum();
+        Double total = orderTableDtos.stream().mapToDouble(t -> Double.parseDouble(t.getTotal())).sum();
         Order newOrder = Order.builder()
                 .customerId(customer.getId())
                 .status(OrderStatus.CREATED)
@@ -56,7 +56,7 @@ public class OrderService {
                     .orderId(order.getId())
                     .productId(dto.getProductId())
                     .quantity(dto.getQuantity())
-                    .amount(dto.getPrice())
+                    .amount(Double.parseDouble(dto.getPrice()))
                     .build();
 
             orderDetailRepository.save(orderDetail);

@@ -1,5 +1,6 @@
 package com.mjtech.pos.GuiHandler;
 
+import com.mjtech.pos.constant.Formats;
 import com.mjtech.pos.constant.InvoiceStatus;
 import com.mjtech.pos.dto.OrderTableDto;
 import com.mjtech.pos.dto.PendingInvoiceTableDto;
@@ -11,6 +12,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -40,16 +43,21 @@ public class OrderAndInvoiceHandler {
     @Autowired
     private CustomerRepository customerRepository;
 
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    @Value("${tax.percentage}")
+    private Double taxPercentage;
 
     public void saveOrder(Customer customer, List<OrderTableDto> orderTableDtoList,
                           TableView<PendingInvoiceTableDto> pendingInvoiceTableDtoTable,
-                          TableView<OrderTableDto> invoiceTable) {
+                          TableView<OrderTableDto> invoiceTable,
+                          TextField totalAmountTextField,
+                          TextField gstTextField) {
         Invoice invoice = orderService.saveOrder(customer, orderTableDtoList);
-        populateInvoiceTable(invoiceTable, invoice.getId());
+        populateInvoiceTable(invoiceTable, invoice.getId(), totalAmountTextField, gstTextField);
     }
 
-    public void populateInvoiceTable(TableView<OrderTableDto> invoiceTable, int invoiceId) {
+    public void populateInvoiceTable(TableView<OrderTableDto> invoiceTable, int invoiceId,
+                                     TextField totalAmountTextField,
+                                     TextField gstTextField) {
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(()-> new RuntimeException(String.format("Invoice not found with id %s", invoiceId)));
 
@@ -62,6 +70,12 @@ public class OrderAndInvoiceHandler {
                 "Total", "total");
 
         FxmlUtil.populateTableView(invoiceTable, orderTableDtos, columnMap);
+
+        double totalInvoiceAmount = orderTableDtos.stream().mapToDouble(t -> Double.parseDouble(t.getTotal())).sum();
+        totalAmountTextField.setText(Formats.getDecimalFormat().format(totalInvoiceAmount));
+
+        double percentageAmount = (totalInvoiceAmount * taxPercentage) / 100;
+        gstTextField.setText(Formats.getDecimalFormat().format(percentageAmount));
     }
 
     private ArrayList<OrderTableDto> createOrderTableDto(Invoice invoice) {
@@ -74,9 +88,9 @@ public class OrderAndInvoiceHandler {
                     .code(product.getCode())
                     .productName(product.getName())
                     .productId(product.getId())
-                    .price(invoiceDetail.getAmount())
+                    .price(Formats.getDecimalFormat().format(invoiceDetail.getAmount()))
                     .quantity(invoiceDetail.getQuantity())
-                    .total(invoiceDetail.getAmount() * invoiceDetail.getQuantity())
+                    .total(Formats.getDecimalFormat().format(invoiceDetail.getAmount() * invoiceDetail.getQuantity()))
                     .build();
 
             orderTableDtos.add(dto);
@@ -112,7 +126,7 @@ public class OrderAndInvoiceHandler {
             PendingInvoiceTableDto dto = PendingInvoiceTableDto.builder()
                     .amount(invoice.getAmount())
                     .customer(customer.getFullName())
-                    .orderDate(formatter.format(order.getOrderDate()))
+                    .orderDate(Formats.getSimpleDateFormat().format(order.getOrderDate()))
                     .status(invoice.getStatus().name())
                     .orderNo(order.getOrderNo())
                     .invoiceId(invoice.getId())

@@ -1,6 +1,7 @@
 package com.mjtech.pos.controller;
 
 import com.mjtech.pos.GuiHandler.OrderAndInvoiceHandler;
+import com.mjtech.pos.constant.Formats;
 import com.mjtech.pos.constant.Gender;
 import com.mjtech.pos.dto.OrderTableDto;
 import com.mjtech.pos.dto.PendingInvoiceTableDto;
@@ -12,9 +13,11 @@ import com.mjtech.pos.util.FxmlUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -61,7 +64,10 @@ public class OrderController implements ControllerInterface, Initializable {
     private TextField gstTextField;
 
     @FXML
-    private TextField totalAmountTextField;
+    private TextField totalAmountTextField, cashReceivedTextField, balanceTextField;
+
+    @FXML
+    private RadioButton cashRadioBtn, cardRadioBtn, cashAndCardRadioBtn;
 
     @FXML
     private TextField remarksTextField;
@@ -89,7 +95,8 @@ public class OrderController implements ControllerInterface, Initializable {
 
     @FXML
     public void saveOrderBtn() {
-        orderAndInvoiceHandler.saveOrder(this.selectedCustomer, orderTable.getItems(), pendingInvoiceTable, invoiceTable);
+        orderAndInvoiceHandler.saveOrder(this.selectedCustomer, orderTable.getItems(), pendingInvoiceTable,
+                invoiceTable, totalAmountTextField, gstTextField);
         clearOrder();
 
     }
@@ -98,12 +105,20 @@ public class OrderController implements ControllerInterface, Initializable {
         productTextField.clear();
         quantityTextField.clear();
         orderTable.setItems(null);
+        totalOrderTextField.clear();
         setGeneralCustomer();
     }
 
     @FXML
     public void deleteItemBtn() {
-
+        OrderTableDto selectedItem = orderTable.getSelectionModel().getSelectedItem();
+        if(selectedItem == null) {
+            FxmlUtil.callWarningAlert("Please select item from order table to delete");
+            return;
+        }
+        orderTable.getItems().remove(selectedItem);
+        orderTable.refresh();
+        calculateOrderTotal();
     }
 
     @FXML
@@ -167,8 +182,8 @@ public class OrderController implements ControllerInterface, Initializable {
                 .productName(product.getName())
                 .productId(product.getId())
                 .quantity(quantity)
-                .price(product.getSellPrice())
-                .total(product.getSellPrice() * quantity)
+                .price(Formats.getDecimalFormat().format(product.getSellPrice()))
+                .total(Formats.getDecimalFormat().format(product.getSellPrice() * quantity))
                 .build();
         orderTable.getItems().add(orderTableDto);
         quantityTextField.clear();
@@ -179,8 +194,8 @@ public class OrderController implements ControllerInterface, Initializable {
     }
 
     private void calculateOrderTotal() {
-        double totalOrderSum = orderTable.getItems().stream().mapToDouble(OrderTableDto::getTotal).sum();
-        totalOrderTextField.setText(String.valueOf(totalOrderSum));
+        double totalOrderSum = orderTable.getItems().stream().mapToDouble(t -> Double.parseDouble(t.getTotal())).sum();
+        totalOrderTextField.setText(String.valueOf(Formats.getDecimalFormat().format(totalOrderSum)));
     }
 
     @Override
@@ -196,7 +211,22 @@ public class OrderController implements ControllerInterface, Initializable {
         pendingInvoiceTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
                 PendingInvoiceTableDto selectedItem = pendingInvoiceTable.getSelectionModel().getSelectedItem();
-                orderAndInvoiceHandler.populateInvoiceTable(invoiceTable, selectedItem.getInvoiceId());
+                orderAndInvoiceHandler.populateInvoiceTable(invoiceTable, selectedItem.getInvoiceId(), totalAmountTextField, gstTextField);
+            }
+        });
+
+        // cashReceivedTextField to take input only number with precision.
+        cashReceivedTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String input = event.getCharacter();
+            if (!input.matches("[\\d.]")) {
+                event.consume();
+            }
+        });
+        // quantityTextField to take input only number.
+        quantityTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String input = event.getCharacter();
+            if (!input.matches("\\d")) {
+                event.consume();
             }
         });
     }

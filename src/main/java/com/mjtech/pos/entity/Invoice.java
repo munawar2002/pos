@@ -54,6 +54,30 @@ public class Invoice {
     @Column(name = "STATUS_CHANGE_DATE")
     private Date statusChangeDate;
 
+    @Column(name = "tax_percentage")
+    private Double taxPercentage;
+
+    @Column(name = "gst")
+    private Double gst;
+
+    @Column(name = "DISCOUNT_AMOUNT")
+    private Double discountAmount;
+
+    @Column(name = "DISCOUNT_Percentage")
+    private Double discountPercentage;
+
+    @Column(name = "TOTAL_DISCOUNT")
+    private Double totalDiscount;
+
+    @Column(name = "TOTAL_AMOUNT")
+    private Double totalAmount;
+
+    @Column(name = "CASH_RECEIVED")
+    private Double cashReceived;
+
+    @Column(name = "BALANCE_AMOUNT")
+    private Double balanceAmount;
+
     @Column(name = "created_by")
     private String createdBy;
 

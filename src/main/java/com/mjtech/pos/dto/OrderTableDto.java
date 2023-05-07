@@ -10,6 +10,6 @@ public class OrderTableDto {
     private String productName;
     private int productId;
     private int quantity;
-    private Double price;
-    private Double total;
+    private String price;
+    private String total;
 }
