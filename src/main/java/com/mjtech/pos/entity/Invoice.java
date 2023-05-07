@@ -2,7 +2,7 @@ package com.mjtech.pos.entity;
 
 
 import com.mjtech.pos.constant.InvoiceStatus;
-import com.mjtech.pos.constant.OrderStatus;
+import com.mjtech.pos.util.ActiveUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +45,9 @@ public class Invoice {
     @Column(name = "remarks")
     private String remarks;
 
+    @Column(name = "invoice_no")
+    private String invoiceNo;
+
     @Column(name = "refund_amount")
     private Double refundAmount;
 
@@ -64,4 +67,15 @@ public class Invoice {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if(id==0) {
+            createdAt = new Date();
+            createdBy = ActiveUser.getActiveUsername();
+        } else {
+            updatedAt = new Date();
+            updatedBy = ActiveUser.getActiveUsername();
+        }
+    }
 }

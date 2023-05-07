@@ -82,7 +82,7 @@
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <TableView fx:id="orderTable" layoutX="8.0" layoutY="48.0" prefHeight="426.0" prefWidth="537.0">
+                        <TableView fx:id="orderTable" layoutX="8.0" layoutY="48.0" prefHeight="395.0" prefWidth="537.0">
                            <columns>
                               <TableColumn minWidth="0.0" prefWidth="77.0" text="Code" />
                               <TableColumn prefWidth="200.0" text="Product Name" />
@@ -96,14 +96,23 @@
                               <Font name="Arial Bold" size="14.0" />
                            </font>
                         </Button>
+                        <TextField fx:id="totalOrderTextField" disable="true" editable="false" layoutX="472.0" layoutY="443.0" onAction="#addItemInOrderTable" prefHeight="26.0" prefWidth="73.0">
+                           <font>
+                              <Font name="Arial Bold" size="14.0" />
+                           </font></TextField>
+                        <Label alignment="CENTER_RIGHT" layoutX="414.0" layoutY="443.0" prefHeight="26.0" prefWidth="46.0" text="Total:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
                      </children>
                   </AnchorPane>
                </children>
             </AnchorPane>
             <AnchorPane layoutX="582.0" layoutY="6.0" prefHeight="688.0" prefWidth="612.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
                <children>
-                  <TextField fx:id="invoiceNoSearchTextField" layoutX="107.0" layoutY="65.0" prefHeight="26.0" prefWidth="354.0" />
-                  <Label alignment="CENTER_RIGHT" layoutX="7.0" layoutY="65.0" prefHeight="26.0" prefWidth="80.0" text="Invoice No:">
+                  <TextField fx:id="orderNoSearchTextField" layoutX="107.0" layoutY="65.0" prefHeight="26.0" prefWidth="354.0" />
+                  <Label alignment="CENTER_RIGHT" layoutX="7.0" layoutY="65.0" prefHeight="26.0" prefWidth="80.0" text="Order No:">
                      <font>
                         <Font size="17.0" />
                      </font>
@@ -129,19 +138,19 @@
                   </Button>
                   <AnchorPane layoutX="9.0" layoutY="244.0" prefHeight="433.0" prefWidth="591.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
                      <children>
-                        <TextField fx:id="totalAmountTextField" layoutX="518.0" layoutY="351.0" prefHeight="26.0" prefWidth="66.0" />
-                        <Label alignment="CENTER_RIGHT" layoutX="467.0" layoutY="351.0" prefHeight="26.0" prefWidth="46.0" text="Total:">
+                        <TextField fx:id="totalAmountTextField" layoutX="518.0" layoutY="321.0" prefHeight="26.0" prefWidth="66.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="467.0" layoutY="321.0" prefHeight="26.0" prefWidth="46.0" text="Total:">
                            <font>
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="gstTextField" layoutX="423.0" layoutY="351.0" prefHeight="26.0" prefWidth="46.0" />
-                        <Label alignment="CENTER_RIGHT" layoutX="375.0" layoutY="351.0" prefHeight="26.0" prefWidth="46.0" text="GST:">
+                        <TextField fx:id="gstTextField" layoutX="423.0" layoutY="321.0" prefHeight="26.0" prefWidth="46.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="375.0" layoutY="321.0" prefHeight="26.0" prefWidth="46.0" text="GST:">
                            <font>
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <TableView fx:id="invoiceTable" layoutX="6.0" layoutY="6.0" prefHeight="339.0" prefWidth="578.0">
+                        <TableView fx:id="invoiceTable" layoutX="6.0" layoutY="6.0" prefHeight="309.0" prefWidth="578.0">
                            <columns>
                               <TableColumn prefWidth="59.0" text="Code" />
                               <TableColumn prefWidth="291.0" text="Product Name" />
@@ -150,14 +159,14 @@
                               <TableColumn prefWidth="84.0" text="Total" />
                            </columns>
                         </TableView>
-                        <TextField fx:id="discountAmountTextField" layoutX="153.0" layoutY="351.0" prefHeight="26.0" prefWidth="57.0" />
-                        <Label alignment="CENTER_RIGHT" layoutX="6.0" layoutY="351.0" prefHeight="26.0" prefWidth="135.0" text="Discount Amount:">
+                        <TextField fx:id="discountAmountTextField" layoutX="153.0" layoutY="321.0" prefHeight="26.0" prefWidth="57.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="6.0" layoutY="321.0" prefHeight="26.0" prefWidth="135.0" text="Discount Amount:">
                            <font>
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="discountPercentTextField" layoutX="329.0" layoutY="351.0" prefHeight="26.0" prefWidth="46.0" />
-                        <Label alignment="CENTER_RIGHT" layoutX="220.0" layoutY="351.0" prefHeight="26.0" prefWidth="96.0" text="Discount %">
+                        <TextField fx:id="discountPercentTextField" layoutX="329.0" layoutY="321.0" prefHeight="26.0" prefWidth="46.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="220.0" layoutY="321.0" prefHeight="26.0" prefWidth="96.0" text="Discount %">
                            <font>
                               <Font size="17.0" />
                            </font>
@@ -184,6 +193,12 @@
                               <Insets bottom="5.0" right="15.0" top="5.0" />
                            </padding>
                         </ButtonBar>
+                        <TextField fx:id="remarksTextField" layoutX="153.0" layoutY="354.0" prefHeight="26.0" prefWidth="431.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="2.0" layoutY="354.0" prefHeight="26.0" prefWidth="135.0" text="Remarks:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
                      </children>
                   </AnchorPane>
                </children>

@@ -39,6 +39,18 @@ public class ProductHandler {
         Double sellPrice = Double.parseDouble(sellPriceTextField.getText());
         int quantity = Integer.parseInt(quantityTextField.getText());
 
+        Optional<Product> byCode = productRepository.findByCode(code);
+        if(byCode.isPresent()) {
+            FxmlUtil.callErrorAlert(String.format("Product already exist with product code %s", code));
+            return;
+        }
+
+        Optional<Product> byName = productRepository.findByName(name);
+        if(byName.isPresent()) {
+            FxmlUtil.callErrorAlert(String.format("Product already exist with product name %s", name));
+            return;
+        }
+
         Product product = Product.builder()
                 .code(code)
                 .name(name)

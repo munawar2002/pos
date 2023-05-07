@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -92,7 +93,10 @@ public class ProductPopupController implements ControllerInterface, Initializabl
             selectedSearchCategory.setId(null);
         }
 
-        List<Integer> productIds = orderTableDtoList.stream().map(OrderTableDto::getProductId).toList();
+        List<Integer> productIds = new ArrayList<>();
+        if(orderTableDtoList != null) {
+            productIds = orderTableDtoList.stream().map(OrderTableDto::getProductId).toList();
+        }
 
         productHandler.searchProduct(codeSearchTextField, nameSearchTextField,
                 selectedSearchCategory.getId(), selectedSearchCompany.getId(), selectedSearchSupplier.getId(),

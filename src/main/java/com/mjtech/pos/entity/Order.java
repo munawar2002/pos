@@ -2,6 +2,7 @@ package com.mjtech.pos.entity;
 
 
 import com.mjtech.pos.constant.OrderStatus;
+import com.mjtech.pos.util.ActiveUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ORDER")
+@Table(name = "ORDERS")
 @Builder
 public class Order {
     @Id
@@ -43,6 +44,9 @@ public class Order {
     @Column(name = "remarks")
     private String remarks;
 
+    @Column(name = "order_no")
+    private String orderNo;
+
     @Column(name = "refund_amount")
     private Double refundAmount;
 
@@ -62,4 +66,15 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if(id==0) {
+            createdAt = new Date();
+            createdBy = ActiveUser.getActiveUsername();
+        } else {
+            updatedAt = new Date();
+            updatedBy = ActiveUser.getActiveUsername();
+        }
+    }
 }

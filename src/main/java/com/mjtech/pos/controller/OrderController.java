@@ -1,7 +1,9 @@
 package com.mjtech.pos.controller;
 
+import com.mjtech.pos.GuiHandler.OrderAndInvoiceHandler;
 import com.mjtech.pos.constant.Gender;
 import com.mjtech.pos.dto.OrderTableDto;
+import com.mjtech.pos.dto.PendingInvoiceTableDto;
 import com.mjtech.pos.dto.ProductDto;
 import com.mjtech.pos.entity.*;
 import com.mjtech.pos.repository.ProductRepository;
@@ -41,10 +43,13 @@ public class OrderController implements ControllerInterface, Initializable {
     private TextField quantityTextField;
 
     @FXML
+    private TextField totalOrderTextField;
+
+    @FXML
     private TableView<OrderTableDto> orderTable;
 
     @FXML
-    private TextField invoiceNoSearchTextField;
+    private TextField orderNoSearchTextField;
 
     @FXML
     private TextField discountAmountTextField;
@@ -59,10 +64,13 @@ public class OrderController implements ControllerInterface, Initializable {
     private TextField totalAmountTextField;
 
     @FXML
-    private TableView<Invoice> pendingInvoiceTable;
+    private TextField remarksTextField;
 
     @FXML
-    private TableView<InvoiceDetail> invoiceTable;
+    private TableView<PendingInvoiceTableDto> pendingInvoiceTable;
+
+    @FXML
+    private TableView<OrderTableDto> invoiceTable;
 
     @Autowired
     private ConfigurableApplicationContext applicationContext;
@@ -73,12 +81,24 @@ public class OrderController implements ControllerInterface, Initializable {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private OrderAndInvoiceHandler orderAndInvoiceHandler;
+
     private Customer selectedCustomer;
     private ProductDto selectedProduct;
 
     @FXML
     public void saveOrderBtn() {
+        orderAndInvoiceHandler.saveOrder(this.selectedCustomer, orderTable.getItems(), pendingInvoiceTable, invoiceTable);
+        clearOrder();
 
+    }
+
+    private void clearOrder() {
+        productTextField.clear();
+        quantityTextField.clear();
+        orderTable.setItems(null);
+        setGeneralCustomer();
     }
 
     @FXML
@@ -113,7 +133,7 @@ public class OrderController implements ControllerInterface, Initializable {
 
     @FXML
     public void invoiceSearchBtn() {
-
+        orderAndInvoiceHandler.populatePendingInvoiceTable(orderNoSearchTextField, pendingInvoiceTable);
     }
 
     @FXML
@@ -155,10 +175,33 @@ public class OrderController implements ControllerInterface, Initializable {
         productTextField.clear();
         productTextField.requestFocus();
         this.selectedProduct = null;
+        calculateOrderTotal();
+    }
+
+    private void calculateOrderTotal() {
+        double totalOrderSum = orderTable.getItems().stream().mapToDouble(OrderTableDto::getTotal).sum();
+        totalOrderTextField.setText(String.valueOf(totalOrderSum));
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        setGeneralCustomer();
+
+        quantityTextField.setOnAction(event -> {
+            addItemInOrderTable();
+        });
+
+        setupOrderTable();
+
+        pendingInvoiceTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 1) {
+                PendingInvoiceTableDto selectedItem = pendingInvoiceTable.getSelectionModel().getSelectedItem();
+                orderAndInvoiceHandler.populateInvoiceTable(invoiceTable, selectedItem.getInvoiceId());
+            }
+        });
+    }
+
+    private void setGeneralCustomer() {
         List<Customer> customers = customerService.searchCustomer("Mr General", Gender.MALE.name(),
                 "", "");
         if(!customers.isEmpty()) {
@@ -166,12 +209,6 @@ public class OrderController implements ControllerInterface, Initializable {
         }
         customerTextField.setText(selectedCustomer.getFullName());
         Platform.runLater(() -> productTextField.requestFocus());
-
-        quantityTextField.setOnAction(event -> {
-            addItemInOrderTable();
-        });
-
-        setupOrderTable();
     }
 
     private void setupOrderTable() {

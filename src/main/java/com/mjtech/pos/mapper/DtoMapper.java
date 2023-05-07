@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class GenericFormDtoMapper {
+public class DtoMapper {
 
     private final static ModelMapper modelMapper = new ModelMapper();
 

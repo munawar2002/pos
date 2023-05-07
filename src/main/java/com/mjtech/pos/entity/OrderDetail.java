@@ -1,6 +1,7 @@
 package com.mjtech.pos.entity;
 
 
+import com.mjtech.pos.util.ActiveUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,9 @@ public class OrderDetail {
     @Column(name = "quantity")
     private int quantity;
 
+    @Column(name = "amount")
+    private Double amount;
+
     @Column(name = "created_by")
     private String createdBy;
 
@@ -42,4 +46,15 @@ public class OrderDetail {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if(id==0) {
+            createdAt = new Date();
+            createdBy = ActiveUser.getActiveUsername();
+        } else {
+            updatedAt = new Date();
+            updatedBy = ActiveUser.getActiveUsername();
+        }
+    }
 }

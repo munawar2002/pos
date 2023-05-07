@@ -6,7 +6,7 @@ import com.mjtech.pos.dto.GenericFromDto;
 import com.mjtech.pos.entity.ProductCategory;
 import com.mjtech.pos.entity.ProductCompany;
 import com.mjtech.pos.entity.Supplier;
-import com.mjtech.pos.mapper.GenericFormDtoMapper;
+import com.mjtech.pos.mapper.DtoMapper;
 import com.mjtech.pos.service.ProductCategoryService;
 import com.mjtech.pos.service.ProductCompanyService;
 import com.mjtech.pos.service.SupplierService;
@@ -47,15 +47,15 @@ public class GenericFormHandler {
         if (formName.equals(GenericFormValue.PRODUCT_CATEGORY.getValue())) {
             ProductCategoryService productCategoryService = applicationContext.getBean(ProductCategoryService.class);
             List<ProductCategory> productCategories = productCategoryService.search(text, null);
-            return GenericFormDtoMapper.mapToGenericFormDtos(productCategories);
+            return DtoMapper.mapToGenericFormDtos(productCategories);
         } else if(formName.equals(GenericFormValue.SUPPLIER.getValue())) {
             SupplierService supplierService = applicationContext.getBean(SupplierService.class);
             List<Supplier> suppliers = supplierService.find(text);
-            return GenericFormDtoMapper.mapToGenericFormDtos(suppliers);
+            return DtoMapper.mapToGenericFormDtos(suppliers);
         } else if(formName.equals(GenericFormValue.PRODUCT_COMPANY.getValue())) {
             ProductCompanyService productCompanyService = applicationContext.getBean(ProductCompanyService.class);
             List<ProductCompany> suppliers = productCompanyService.find(text);
-            return GenericFormDtoMapper.mapToGenericFormDtos(suppliers);
+            return DtoMapper.mapToGenericFormDtos(suppliers);
         }
 
         return null;
@@ -75,15 +75,15 @@ public class GenericFormHandler {
         if (formName.equals(GenericFormValue.PRODUCT_CATEGORY.getValue())) {
             ProductCategoryService productCategoryService = applicationContext.getBean(ProductCategoryService.class);
             objects = productCategoryService.search(name, description);
-            genericFromDtos = GenericFormDtoMapper.mapToGenericFormDtos(objects);
+            genericFromDtos = DtoMapper.mapToGenericFormDtos(objects);
         } else if (formName.equals(GenericFormValue.SUPPLIER.getValue())) {
             SupplierService supplierService = applicationContext.getBean(SupplierService.class);
             objects = supplierService.find(name);
-            genericFromDtos = GenericFormDtoMapper.mapToGenericFormDtos(objects);
+            genericFromDtos = DtoMapper.mapToGenericFormDtos(objects);
         } else if (formName.equals(GenericFormValue.PRODUCT_COMPANY.getValue())) {
             ProductCompanyService productCompanyService = applicationContext.getBean(ProductCompanyService.class);
             objects = productCompanyService.find(name);
-            genericFromDtos = GenericFormDtoMapper.mapToGenericFormDtos(objects);
+            genericFromDtos = DtoMapper.mapToGenericFormDtos(objects);
         }
 
         populateTable(genericFromDtos, table);

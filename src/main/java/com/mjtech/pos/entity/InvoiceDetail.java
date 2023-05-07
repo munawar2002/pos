@@ -1,6 +1,7 @@
 package com.mjtech.pos.entity;
 
 
+import com.mjtech.pos.util.ActiveUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ public class InvoiceDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "order_id")
+    @Column(name = "invoice_id")
     private int invoiceId;
 
     @Column(name = "product_id")
@@ -28,6 +29,9 @@ public class InvoiceDetail {
 
     @Column(name = "quantity")
     private int quantity;
+
+    @Column(name = "amount")
+    private Double amount;
 
     @Column(name = "created_by")
     private String createdBy;
@@ -42,4 +46,15 @@ public class InvoiceDetail {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if(id==0) {
+            createdAt = new Date();
+            createdBy = ActiveUser.getActiveUsername();
+        } else {
+            updatedAt = new Date();
+            updatedBy = ActiveUser.getActiveUsername();
+        }
+    }
 }

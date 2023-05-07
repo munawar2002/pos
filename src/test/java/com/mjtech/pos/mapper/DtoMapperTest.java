@@ -9,7 +9,7 @@ import org.modelmapper.ModelMapper;
 import java.util.Arrays;
 import java.util.List;
 
-public class GenericFormDtoMapperTest {
+public class DtoMapperTest {
 
     private final ModelMapper modelMapper = new ModelMapper();
 
@@ -23,7 +23,7 @@ public class GenericFormDtoMapperTest {
         List<ProductCategory> productCategories = Arrays.asList(category1, category2, category3);
 
         // Act
-        List<GenericFromDto> dtoList = GenericFormDtoMapper.mapToGenericFormDtos(productCategories);
+        List<GenericFromDto> dtoList = DtoMapper.mapToGenericFormDtos(productCategories);
 
         // Assert
         Assertions.assertEquals(productCategories.size(), dtoList.size());
