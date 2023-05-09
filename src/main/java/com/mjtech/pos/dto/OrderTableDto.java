@@ -12,4 +12,6 @@ public class OrderTableDto {
     private int quantity;
     private String price;
     private String total;
+    private boolean existingOrder = false;
+    private int orderId;
 }

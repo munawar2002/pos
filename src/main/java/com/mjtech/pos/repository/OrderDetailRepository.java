@@ -10,4 +10,7 @@ import java.util.List;
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Integer> {
 
     List<OrderDetail> findByOrderId(int orderId);
+
+    void deleteByOrderId(int orderId);
+
 }

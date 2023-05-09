@@ -31,12 +31,6 @@ import java.util.ResourceBundle;
 public class OrderController implements ControllerInterface, Initializable {
 
     @FXML
-    private TextField orderNoTextField;
-
-    @FXML
-    private TextField prevOrderTextField;
-
-    @FXML
     private TextField customerTextField;
 
     @FXML
@@ -55,22 +49,19 @@ public class OrderController implements ControllerInterface, Initializable {
     private TextField orderNoSearchTextField;
 
     @FXML
-    private TextField discountAmountTextField;
-
-    @FXML
-    private TextField discountPercentTextField;
+    private TextField discountAmountTextField, discountPercentTextField, totalDiscountTextField;
 
     @FXML
     private TextField gstTextField;
 
     @FXML
-    private TextField totalAmountTextField, cashReceivedTextField, balanceTextField;
+    private TextField amountTextField, cashReceivedTextField, balanceTextField, totalAmountTextField;
 
     @FXML
     private RadioButton cashRadioBtn, cardRadioBtn, cashAndCardRadioBtn;
 
     @FXML
-    private TextField remarksTextField;
+    private TextField remarksTextField, orderRemarksTextField;
 
     @FXML
     private TableView<PendingInvoiceTableDto> pendingInvoiceTable;
@@ -96,16 +87,22 @@ public class OrderController implements ControllerInterface, Initializable {
     @FXML
     public void saveOrderBtn() {
         orderAndInvoiceHandler.saveOrder(this.selectedCustomer, orderTable.getItems(), pendingInvoiceTable,
-                invoiceTable, totalAmountTextField, gstTextField);
+                invoiceTable, amountTextField, gstTextField, orderRemarksTextField, remarksTextField);
         clearOrder();
+        pendingInvoiceTable.getItems().clear();
+        invoiceTable.getItems().clear();
+        amountTextField.clear();
+        gstTextField.clear();
+        orderRemarksTextField.clear();
 
     }
 
     private void clearOrder() {
         productTextField.clear();
         quantityTextField.clear();
-        orderTable.setItems(null);
+        orderTable.getItems().clear();
         totalOrderTextField.clear();
+        orderRemarksTextField.clear();
         setGeneralCustomer();
     }
 
@@ -123,12 +120,17 @@ public class OrderController implements ControllerInterface, Initializable {
 
     @FXML
     public void orderClearBtn() {
+        clearOrder();
 
     }
 
     @FXML
     public void readyToPayBtn() {
-
+        orderAndInvoiceHandler.saveOrder(this.selectedCustomer, orderTable.getItems(), pendingInvoiceTable,
+                invoiceTable, amountTextField, gstTextField, orderRemarksTextField, remarksTextField);
+        calculateAndSetTotalDiscount();
+        calculateTotalAmount();
+        clearOrder();
     }
 
     @FXML
@@ -138,16 +140,41 @@ public class OrderController implements ControllerInterface, Initializable {
 
     @FXML
     public void invoiceClearBtn() {
+        invoiceTable.getItems().clear();
+        pendingInvoiceTable.getItems().clear();
+        orderNoSearchTextField.clear();
+        amountTextField.clear();
+        gstTextField.clear();
+        discountAmountTextField.clear();
+        discountPercentTextField.clear();
+        totalDiscountTextField.clear();
+        totalAmountTextField.clear();
+        cashReceivedTextField.clear();
+        balanceTextField.clear();
+        remarksTextField.clear();
 
     }
 
     @FXML
     public void editOrderBtn() {
+        PendingInvoiceTableDto selectedItem = pendingInvoiceTable.getSelectionModel().getSelectedItem();
+        if(selectedItem == null) {
+            FxmlUtil.callErrorAlert("Please click order in pending invoice table to edit!");
+            return;
+        }
 
+        orderAndInvoiceHandler.populateOrderTableByOrderNo(selectedItem.getOrderNo(), orderTable, orderRemarksTextField);
+        calculateOrderTotal();
+        invoiceClearBtn();
     }
 
     @FXML
     public void invoiceSearchBtn() {
+        orderAndInvoiceHandler.populatePendingInvoiceTable(orderNoSearchTextField, pendingInvoiceTable);
+    }
+
+    @FXML
+    public void invoiceSearchThroughOrderNo() {
         orderAndInvoiceHandler.populatePendingInvoiceTable(orderNoSearchTextField, pendingInvoiceTable);
     }
 
@@ -211,24 +238,86 @@ public class OrderController implements ControllerInterface, Initializable {
         pendingInvoiceTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
                 PendingInvoiceTableDto selectedItem = pendingInvoiceTable.getSelectionModel().getSelectedItem();
-                orderAndInvoiceHandler.populateInvoiceTable(invoiceTable, selectedItem.getInvoiceId(), totalAmountTextField, gstTextField);
+                if(selectedItem == null) return;
+                orderAndInvoiceHandler.populateInvoiceTable(invoiceTable, selectedItem.getInvoiceId(),
+                        amountTextField, gstTextField, remarksTextField);
+                calculateAndSetTotalDiscount();
+                calculateTotalAmount();
+            }
+        });
+        cashRadioBtn.setSelected(true);
+        makeTextFieldsToReadNumbersOnly();
+        discountEvents();
+
+        cashReceivedTextField.setOnAction(event -> {
+            calculateBalanceAmount();
+        });
+        cashReceivedTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                // Code to execute when focus is lost
+                calculateBalanceAmount();
             }
         });
 
-        // cashReceivedTextField to take input only number with precision.
-        cashReceivedTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
-            String input = event.getCharacter();
-            if (!input.matches("[\\d.]")) {
-                event.consume();
+    }
+
+    private void calculateBalanceAmount() {
+        String cashReceivedText = cashReceivedTextField.getText();
+        double totalAmount = Double.parseDouble(totalAmountTextField.getText());
+        double balanceAmount = 0;
+        if(!cashReceivedText.isEmpty()) {
+            double cashReceived = Double.parseDouble(cashReceivedText);
+            balanceAmount = totalAmount - cashReceived;
+        }
+        balanceTextField.setText(Formats.getDecimalFormat().format(balanceAmount));
+    }
+
+    private void calculateTotalAmount() {
+        double amount = Double.parseDouble(amountTextField.getText());
+        double gst = Double.parseDouble(gstTextField.getText());
+        double totalDiscount = totalDiscountTextField.getText().isEmpty() ? 0 :
+                Double.parseDouble(totalDiscountTextField.getText());
+        double totalAmount = amount + gst - totalDiscount;
+        totalAmountTextField.setText(Formats.getDecimalFormat().format(totalAmount));
+    }
+
+    private void discountEvents() {
+        discountAmountTextField.setOnAction(event -> {
+            calculateAndSetTotalDiscount();
+        });
+        discountAmountTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                // Code to execute when focus is lost
+                calculateAndSetTotalDiscount();
             }
         });
-        // quantityTextField to take input only number.
-        quantityTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
-            String input = event.getCharacter();
-            if (!input.matches("\\d")) {
-                event.consume();
+        discountPercentTextField.setOnAction(event -> {
+            calculateAndSetTotalDiscount();
+        });
+        discountPercentTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                // Code to execute when focus is lost
+                calculateAndSetTotalDiscount();
             }
         });
+    }
+
+    private void calculateAndSetTotalDiscount() {
+        String discountAmount = discountAmountTextField.getText();
+        String discountPercentage = discountPercentTextField.getText();
+
+        double totalDiscount = 0.0;
+        if(!discountAmount.isEmpty()) {
+            totalDiscount += Double.parseDouble(discountAmount);
+        }
+
+        if(!discountPercentage.isEmpty()) {
+            double total = Double.parseDouble(amountTextField.getText());
+            double disAmount = (total * Double.parseDouble(discountPercentage)) / 100;
+            totalDiscount += disAmount;
+        }
+        totalDiscountTextField.setText(Formats.getDecimalFormat().format(totalDiscount));
+        calculateTotalAmount();
     }
 
     private void setGeneralCustomer() {
@@ -256,6 +345,45 @@ public class OrderController implements ControllerInterface, Initializable {
                 }
             });
         }
+    }
+
+    private void makeTextFieldsToReadNumbersOnly() {
+        // cashReceivedTextField to take input only number with precision.
+        cashReceivedTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String input = event.getCharacter();
+            if (!input.matches("[\\d.]")) {
+                event.consume();
+            }
+        });
+        // quantityTextField to take input only number.
+        quantityTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String input = event.getCharacter();
+            if (!input.matches("\\d")) {
+                event.consume();
+            }
+        });
+        // discountAmountTextField to take input only number with precision.
+        discountAmountTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String input = event.getCharacter();
+            if (!input.matches("[\\d.]")) {
+                event.consume();
+            }
+        });
+        // discountPercentTextField to take input only number with precision.
+        discountPercentTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String input = event.getCharacter();
+            if (!input.matches("[\\d.]")) {
+                event.consume();
+            }
+        });
+
+        // discountPercentTextField to take input only number with precision.
+        cashReceivedTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String input = event.getCharacter();
+            if (!input.matches("[\\d.]")) {
+                event.consume();
+            }
+        });
     }
 
 }

@@ -13,13 +13,9 @@ import javafx.scene.control.TextField;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -38,6 +34,9 @@ public class OrderAndInvoiceHandler {
     private OrderRepository orderRepository;
 
     @Autowired
+    private OrderDetailRepository orderDetailRepository;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -50,14 +49,18 @@ public class OrderAndInvoiceHandler {
                           TableView<PendingInvoiceTableDto> pendingInvoiceTableDtoTable,
                           TableView<OrderTableDto> invoiceTable,
                           TextField totalAmountTextField,
-                          TextField gstTextField) {
-        Invoice invoice = orderService.saveOrder(customer, orderTableDtoList);
-        populateInvoiceTable(invoiceTable, invoice.getId(), totalAmountTextField, gstTextField);
+                          TextField gstTextField,
+                          TextField orderRemarksTextField,
+                          TextField remarksTextField) {
+        String orderRemarks = orderRemarksTextField.getText();
+        Invoice invoice = orderService.saveOrder(customer, orderTableDtoList, orderRemarks);
+        populateInvoiceTable(invoiceTable, invoice.getId(), totalAmountTextField, gstTextField, remarksTextField);
     }
 
     public void populateInvoiceTable(TableView<OrderTableDto> invoiceTable, int invoiceId,
                                      TextField totalAmountTextField,
-                                     TextField gstTextField) {
+                                     TextField gstTextField,
+                                     TextField remarksTextField) {
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(()-> new RuntimeException(String.format("Invoice not found with id %s", invoiceId)));
 
@@ -76,6 +79,57 @@ public class OrderAndInvoiceHandler {
 
         double percentageAmount = (totalInvoiceAmount * taxPercentage) / 100;
         gstTextField.setText(Formats.getDecimalFormat().format(percentageAmount));
+
+        remarksTextField.setText(invoice.getRemarks());
+    }
+
+    public void populateOrderTableByOrderNo(String orderNo, TableView<OrderTableDto> orderTable, TextField orderRemarksTextField) {
+        if(!orderTable.getItems().isEmpty()) {
+            boolean result = FxmlUtil.callConfirmationAlert("Are you sure you want to load table with selected order." +
+                    " Your existing data in order table will be lost");
+            if(!result) {
+                return;
+            }
+        }
+        Order order = orderRepository.findByOrderNo(orderNo)
+                .orElseThrow(() -> new RuntimeException(String.format("Order not found with orderNo %s", orderNo)));
+
+        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getId());
+
+        List<OrderTableDto> orderTableDtos = mapToOrderTableDto(orderDetails, order);
+
+        var columnMap = Map.of(
+                "Code", "code",
+                "Product Name", "productName",
+                "Quantity", "quantity",
+                "Price", "price",
+                "Total", "total");
+
+        FxmlUtil.populateTableView(orderTable, orderTableDtos, columnMap);
+
+        orderRemarksTextField.setText(order.getRemarks());
+    }
+
+    private List<OrderTableDto> mapToOrderTableDto(List<OrderDetail> orderDetails, Order order) {
+        var list = new ArrayList<OrderTableDto>();
+        for(OrderDetail orderDetail : orderDetails) {
+            Product product = productRepository.findById(orderDetail.getProductId())
+                    .orElseThrow(() -> new RuntimeException(
+                            String.format("Product not found with id %s", orderDetail.getProductId())));
+            ;
+            OrderTableDto dto = OrderTableDto.builder()
+                    .code(product.getCode())
+                    .productName(product.getName())
+                    .productId(product.getId())
+                    .quantity(orderDetail.getQuantity())
+                    .price(Formats.getDecimalFormat().format(product.getSellPrice()))
+                    .total(Formats.getDecimalFormat().format(product.getSellPrice() * orderDetail.getQuantity()))
+                    .existingOrder(true)
+                    .orderId(order.getId())
+                    .build();
+            list.add(dto);
+        }
+        return list;
     }
 
     private ArrayList<OrderTableDto> createOrderTableDto(Invoice invoice) {
@@ -99,7 +153,9 @@ public class OrderAndInvoiceHandler {
     }
 
     public void populatePendingInvoiceTable(TextField orderNoSearchTextField, TableView<PendingInvoiceTableDto> pendingInvoiceTableDtoTable) {
-        List<Invoice> invoices = invoiceRepository.findByStatus(InvoiceStatus.CREATED);
+        List<Invoice> invoices = invoiceRepository.findByStatus(InvoiceStatus.CREATED).stream()
+                .sorted(Comparator.comparing(Invoice::getInvoiceDate).reversed())
+                .collect(Collectors.toList());
 
         String orderNoSearch = orderNoSearchTextField.getText();
 
@@ -109,7 +165,8 @@ public class OrderAndInvoiceHandler {
                 "Status", "status",
                 "Order Date", "orderDate",
                 "Customer", "customer",
-                "Total Amount", "amount");
+                "Total Amount", "amount",
+                "Remarks", "remarks");
 
         FxmlUtil.populateTableView(pendingInvoiceTableDtoTable, pendingInvoiceTableDtoList, columnMap);
     }
@@ -130,6 +187,7 @@ public class OrderAndInvoiceHandler {
                     .status(invoice.getStatus().name())
                     .orderNo(order.getOrderNo())
                     .invoiceId(invoice.getId())
+                    .remarks(invoice.getRemarks())
                     .build();
             list.add(dto);
         }

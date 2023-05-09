@@ -12,4 +12,5 @@ public class PendingInvoiceTableDto {
     private String customer;
     private Double amount;
     private int invoiceId;
+    private String remarks;
 }
