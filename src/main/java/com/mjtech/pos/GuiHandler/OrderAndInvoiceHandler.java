@@ -182,6 +182,8 @@ public class OrderAndInvoiceHandler {
         updateInvoiceFields(invoiceDto, invoice);
         updateOrderFields(invoice);
 
+        // TODO: ledger entries
+
         // TODO: print invoice
     }
 
