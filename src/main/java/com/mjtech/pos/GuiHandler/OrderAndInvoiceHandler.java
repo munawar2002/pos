@@ -2,6 +2,9 @@ package com.mjtech.pos.GuiHandler;
 
 import com.mjtech.pos.constant.Formats;
 import com.mjtech.pos.constant.InvoiceStatus;
+import com.mjtech.pos.constant.OrderStatus;
+import com.mjtech.pos.constant.PaymentType;
+import com.mjtech.pos.dto.InvoiceDto;
 import com.mjtech.pos.dto.OrderTableDto;
 import com.mjtech.pos.dto.PendingInvoiceTableDto;
 import com.mjtech.pos.entity.*;
@@ -45,7 +48,7 @@ public class OrderAndInvoiceHandler {
     @Value("${tax.percentage}")
     private Double taxPercentage;
 
-    public void saveOrder(Customer customer, List<OrderTableDto> orderTableDtoList,
+    public Invoice saveOrder(Customer customer, List<OrderTableDto> orderTableDtoList,
                           TableView<PendingInvoiceTableDto> pendingInvoiceTableDtoTable,
                           TableView<OrderTableDto> invoiceTable,
                           TextField totalAmountTextField,
@@ -55,6 +58,7 @@ public class OrderAndInvoiceHandler {
         String orderRemarks = orderRemarksTextField.getText();
         Invoice invoice = orderService.saveOrder(customer, orderTableDtoList, orderRemarks);
         populateInvoiceTable(invoiceTable, invoice.getId(), totalAmountTextField, gstTextField, remarksTextField);
+        return invoice;
     }
 
     public void populateInvoiceTable(TableView<OrderTableDto> invoiceTable, int invoiceId,
@@ -169,6 +173,60 @@ public class OrderAndInvoiceHandler {
                 "Remarks", "remarks");
 
         FxmlUtil.populateTableView(pendingInvoiceTableDtoTable, pendingInvoiceTableDtoList, columnMap);
+    }
+
+    public void generateInvoice(InvoiceDto invoiceDto) {
+        Invoice invoice = invoiceRepository.findById(invoiceDto.getInvoiceId())
+                .orElseThrow(() -> new RuntimeException(String.format("Invoice not found with id %s", invoiceDto.getInvoiceId())));
+
+        updateInvoiceFields(invoiceDto, invoice);
+        updateOrderFields(invoice);
+
+        // TODO: print invoice
+    }
+
+    private void updateOrderFields(Invoice invoice) {
+        Order order = orderRepository.findById(invoice.getOrderId())
+                .orElseThrow(() -> new RuntimeException(String.format("Order not found with id %s", invoice.getOrderId())));
+        order.setStatus(OrderStatus.PAID);
+        orderRepository.save(order);
+    }
+
+    private void updateInvoiceFields(InvoiceDto invoiceDto, Invoice invoice) {
+        invoice.setDiscountAmount(invoiceDto.getDiscountAmount());
+        invoice.setDiscountPercentage(invoiceDto.getDiscountPercent());
+        invoice.setTotalDiscount(invoiceDto.getDiscountTotal());
+
+        double balanceAmount = invoiceDto.getBalanceAmount();
+        if(invoiceDto.getPaymentType() == PaymentType.CASH) {
+            invoice.setTotalReceived(invoiceDto.getCashReceived());
+            invoice.setCardReceived(0.0);
+        } else if(invoiceDto.getPaymentType() == PaymentType.CARD) {
+            double totalReceived = balanceAmount;
+            invoice.setTotalReceived(totalReceived);
+            invoice.setCardReceived(totalReceived);
+            balanceAmount = 0;
+        } else if(invoiceDto.getPaymentType() == PaymentType.CASH_AND_CARD) {
+            double receivedAmount = invoiceDto.getCashReceived() + balanceAmount;
+            invoice.setCardReceived(balanceAmount);
+            invoice.setTotalReceived(receivedAmount);
+            balanceAmount = 0;
+        }
+
+        invoice.setCashReceived(invoiceDto.getCashReceived());
+        invoice.setBalanceAmount(balanceAmount);
+        invoice.setTotalAmount(invoiceDto.getTotalAmount());
+        invoice.setRemarks(invoiceDto.getRemarks());
+        invoice.setAmount(invoiceDto.getAmount());
+        invoice.setGst(invoiceDto.getGst());
+        invoice.setStatus(InvoiceStatus.PAID);
+        invoice.setInvoiceDate(new Date());
+        invoice.setStatusChangeDate(new Date());
+        invoice.setTaxPercentage(taxPercentage);
+        invoice.setPaymentType(invoiceDto.getPaymentType());
+
+
+        invoiceRepository.save(invoice);
     }
 
     private List<PendingInvoiceTableDto> mapToPendingInvoiceTableDtos(List<Invoice> invoices, String orderNoSearch) {

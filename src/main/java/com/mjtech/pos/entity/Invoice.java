@@ -2,6 +2,7 @@ package com.mjtech.pos.entity;
 
 
 import com.mjtech.pos.constant.InvoiceStatus;
+import com.mjtech.pos.constant.PaymentType;
 import com.mjtech.pos.util.ActiveUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -75,8 +76,18 @@ public class Invoice {
     @Column(name = "CASH_RECEIVED")
     private Double cashReceived;
 
+    @Column(name = "CARD_RECEIVED")
+    private Double cardReceived;
+
     @Column(name = "BALANCE_AMOUNT")
     private Double balanceAmount;
+
+    @Column(name = "TOTAL_RECEIVED")
+    private Double totalReceived;
+
+    @Column(name = "payment_type")
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
 
     @Column(name = "created_by")
     private String createdBy;

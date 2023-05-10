@@ -3,6 +3,8 @@ package com.mjtech.pos.controller;
 import com.mjtech.pos.GuiHandler.OrderAndInvoiceHandler;
 import com.mjtech.pos.constant.Formats;
 import com.mjtech.pos.constant.Gender;
+import com.mjtech.pos.constant.PaymentType;
+import com.mjtech.pos.dto.InvoiceDto;
 import com.mjtech.pos.dto.OrderTableDto;
 import com.mjtech.pos.dto.PendingInvoiceTableDto;
 import com.mjtech.pos.dto.ProductDto;
@@ -18,6 +20,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -28,6 +31,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 @Controller
+@Slf4j
 public class OrderController implements ControllerInterface, Initializable {
 
     @FXML
@@ -83,6 +87,7 @@ public class OrderController implements ControllerInterface, Initializable {
 
     private Customer selectedCustomer;
     private ProductDto selectedProduct;
+    private Integer selectedInvoiceId;
 
     @FXML
     public void saveOrderBtn() {
@@ -126,16 +131,97 @@ public class OrderController implements ControllerInterface, Initializable {
 
     @FXML
     public void readyToPayBtn() {
-        orderAndInvoiceHandler.saveOrder(this.selectedCustomer, orderTable.getItems(), pendingInvoiceTable,
+        Invoice invoice = orderAndInvoiceHandler.saveOrder(this.selectedCustomer, orderTable.getItems(), pendingInvoiceTable,
                 invoiceTable, amountTextField, gstTextField, orderRemarksTextField, remarksTextField);
+        this.selectedInvoiceId = invoice.getId();
         calculateAndSetTotalDiscount();
         calculateTotalAmount();
+        calculateBalanceAmount();
         clearOrder();
     }
 
     @FXML
     public void generateInvoiceBtn() {
+        PaymentType paymentType = null;
+        if((cashRadioBtn.isSelected() || cashAndCardRadioBtn.isSelected()) && cashReceivedTextField.getText().isEmpty()) {
+            FxmlUtil.callErrorAlert("Please enter cash received amount");
+            cashReceivedTextField.requestFocus();
+            return;
+        }
 
+        if(cashRadioBtn.isSelected()) {
+            double cashReceived = Double.parseDouble(cashReceivedTextField.getText());
+            double totalAmount = Double.parseDouble(totalAmountTextField.getText());
+            if(cashReceived < totalAmount) {
+                double remaining = totalAmount - cashReceived;
+                FxmlUtil.callErrorAlert(String.format("Customer have paid less money. Please ask customer to pay more %s",
+                        Formats.getDecimalFormat().format(remaining)));
+                return;
+            }
+            paymentType = PaymentType.CASH;
+        }
+
+        if(invoiceTable.getItems().isEmpty() || this.selectedInvoiceId == null) {
+            FxmlUtil.callErrorAlert("Please create new order or select existing one");
+            return;
+        }
+
+        if(cardRadioBtn.isSelected()) {
+            boolean result = FxmlUtil.callConfirmationAlert(String.format("Have customer paid %s amount by card?", balanceTextField.getText()));
+            if(!result) {
+                log.error("Ask customer to pay by card!!");
+                return;
+            }
+            paymentType = PaymentType.CARD;
+        }
+
+        if(cashAndCardRadioBtn.isSelected()) {
+            if(cashReceivedTextField.getText().isEmpty()) {
+                FxmlUtil.callErrorAlert("Please enter cash received amount from customer");
+                return;
+            }
+            double cashReceived = Double.parseDouble(cashReceivedTextField.getText());
+            double totalAmount = Double.parseDouble(totalAmountTextField.getText());
+            double cardRemainingAmount = totalAmount - cashReceived;
+            boolean result = FxmlUtil.callConfirmationAlert(String.format("Have customer paid %s amount by card?",
+                    Formats.getDecimalFormat().format(cardRemainingAmount)));
+            if(!result) {
+                log.error(String.format("Ask customer to pay %s by card!!", cardRemainingAmount));
+                return;
+            }
+            paymentType = PaymentType.CASH_AND_CARD;
+        }
+
+        double cashReceived = cashReceivedTextField.getText().isEmpty() ? 0 : Double.parseDouble(cashReceivedTextField.getText());
+        double totalAmount = Double.parseDouble(totalAmountTextField.getText());
+        calculateBalanceAmount();
+        double balanceAmount = Double.parseDouble(balanceTextField.getText());
+        double discountAmount = discountAmountTextField.getText().isEmpty() ? 0.0 : Double.parseDouble(discountAmountTextField.getText());
+        double discountPercent = discountPercentTextField.getText().isEmpty() ? 0.0 : Double.parseDouble(discountPercentTextField.getText());
+        double discountTotal = totalDiscountTextField.getText().isEmpty() ? 0.0 : Double.parseDouble(totalDiscountTextField.getText());
+        String remarks = remarksTextField.getText();
+        double amount = Double.parseDouble(amountTextField.getText());
+        double gst = Double.parseDouble(gstTextField.getText());
+
+        var invoiceDto = InvoiceDto.builder()
+                .invoiceId(this.selectedInvoiceId)
+                .cashReceived(cashReceived)
+                .totalAmount(totalAmount)
+                .balanceAmount(balanceAmount)
+                .discountAmount(discountAmount)
+                .discountPercent(discountPercent)
+                .discountTotal(discountTotal)
+                .remarks(remarks)
+                .amount(amount)
+                .paymentType(paymentType)
+                .gst(gst)
+                .build();
+
+        orderAndInvoiceHandler.generateInvoice(invoiceDto);
+        FxmlUtil.callInformationAlert("Invoice Successfully Created!!!");
+        invoiceClearBtn();
+        productTextField.requestFocus();
+        cashRadioBtn.setSelected(true);
     }
 
     @FXML
@@ -200,6 +286,9 @@ public class OrderController implements ControllerInterface, Initializable {
     }
 
     public void addItemInOrderTable() {
+        if(quantityTextField.getText().isEmpty()) {
+            return;
+        }
         Product product = productRepository.findById(selectedProduct.getId())
                 .orElseThrow(() -> new RuntimeException(
                         String.format("Product not found with id %d", selectedProduct.getId())));
@@ -243,6 +332,8 @@ public class OrderController implements ControllerInterface, Initializable {
                         amountTextField, gstTextField, remarksTextField);
                 calculateAndSetTotalDiscount();
                 calculateTotalAmount();
+                calculateBalanceAmount();
+                this.selectedInvoiceId = selectedItem.getInvoiceId();
             }
         });
         cashRadioBtn.setSelected(true);
@@ -264,11 +355,11 @@ public class OrderController implements ControllerInterface, Initializable {
     private void calculateBalanceAmount() {
         String cashReceivedText = cashReceivedTextField.getText();
         double totalAmount = Double.parseDouble(totalAmountTextField.getText());
-        double balanceAmount = 0;
+        double cashReceived = 0;
         if(!cashReceivedText.isEmpty()) {
-            double cashReceived = Double.parseDouble(cashReceivedText);
-            balanceAmount = totalAmount - cashReceived;
+            cashReceived = Double.parseDouble(cashReceivedText);
         }
+        double balanceAmount = totalAmount - cashReceived;
         balanceTextField.setText(Formats.getDecimalFormat().format(balanceAmount));
     }
 
@@ -318,6 +409,7 @@ public class OrderController implements ControllerInterface, Initializable {
         }
         totalDiscountTextField.setText(Formats.getDecimalFormat().format(totalDiscount));
         calculateTotalAmount();
+        calculateBalanceAmount();
     }
 
     private void setGeneralCustomer() {

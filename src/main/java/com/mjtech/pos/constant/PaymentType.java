@@ -1,6 +1,7 @@
 package com.mjtech.pos.constant;
 
 public enum PaymentType {
-    CREDIT,
-    CASH
+    CARD,
+    CASH,
+    CASH_AND_CARD;
 }
