@@ -1,7 +1,5 @@
 package com.mjtech.pos.entity;
 
-
-import com.mjtech.pos.constant.OrderStatus;
 import com.mjtech.pos.util.ActiveUser;
 import com.mjtech.pos.util.UserTerminal;
 import jakarta.persistence.*;
@@ -16,43 +14,19 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ORDERS")
+@Table(name = "ACCOUNTS")
 @Builder
-public class Order {
+public class Account {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "customer_id")
-    private int customerId;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
-
-    @Column(name = "order_date")
-    private Date orderDate;
-
-    @Column(name = "amount")
-    private Double amount;
-
-    @Column(name = "is_invoiced")
-    private boolean isInvoiced;
-
-    @Column(name = "is_refunded")
-    private boolean isRefunded;
-
-    @Column(name = "remarks")
-    private String remarks;
-
-    @Column(name = "order_no")
-    private String orderNo;
-
-    @Column(name = "refund_amount")
-    private Double refundAmount;
-
-    @Column(name = "STATUS_CHANGE_DATE")
-    private Date statusChangeDate;
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "created_by")
     private String createdBy;

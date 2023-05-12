@@ -1,7 +1,7 @@
 package com.mjtech.pos.entity;
 
-
-import com.mjtech.pos.constant.OrderStatus;
+import com.mjtech.pos.constant.LedgerType;
+import com.mjtech.pos.constant.TransactionType;
 import com.mjtech.pos.util.ActiveUser;
 import com.mjtech.pos.util.UserTerminal;
 import jakarta.persistence.*;
@@ -16,43 +16,34 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ORDERS")
+@Table(name = "GENERAL_LEDGER")
 @Builder
-public class Order {
+public class GeneralLedger {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "customer_id")
-    private int customerId;
+    @Column(name = "account_id")
+    private int accountId;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    @Column(name = "invoice_id")
+    private int invoiceId;
 
-    @Column(name = "order_date")
-    private Date orderDate;
+    @Column(name = "transaction_date")
+    private Date transactionDate;
+
+    @Column(name = "transaction_type")
+    private TransactionType transactionType;
+
+    @Column(name = "ledger_type")
+    private LedgerType ledgerType;
 
     @Column(name = "amount")
     private Double amount;
 
-    @Column(name = "is_invoiced")
-    private boolean isInvoiced;
-
-    @Column(name = "is_refunded")
-    private boolean isRefunded;
-
-    @Column(name = "remarks")
-    private String remarks;
-
-    @Column(name = "order_no")
-    private String orderNo;
-
-    @Column(name = "refund_amount")
-    private Double refundAmount;
-
-    @Column(name = "STATUS_CHANGE_DATE")
-    private Date statusChangeDate;
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "created_by")
     private String createdBy;

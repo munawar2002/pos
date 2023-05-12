@@ -2,6 +2,7 @@ CREATE TABLE USERS (
 ID INT AUTO_INCREMENT PRIMARY KEY,
 username VARCHAR(100),
 password VARCHAR(255) not null,
+ACTIVE TINYINT(1) DEFAULT 1,
 first_name VARCHAR(100) not null,
 last_name VARCHAR(100) not null,
 email VARCHAR(100) ,
@@ -10,6 +11,7 @@ created_by VARCHAR(100),
 created_at TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
 updated_by VARCHAR(100),
 updated_at TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
+terminal VARCHAR(200),
 UNIQUE(username)
 );
 

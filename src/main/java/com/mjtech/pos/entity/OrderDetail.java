@@ -2,6 +2,7 @@ package com.mjtech.pos.entity;
 
 
 import com.mjtech.pos.util.ActiveUser;
+import com.mjtech.pos.util.UserTerminal;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,14 +48,20 @@ public class OrderDetail {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @Column(name = "terminal")
+    private String terminal;
+
     @PrePersist
     public void prePersist() {
-        if(id==0) {
-            createdAt = new Date();
-            createdBy = ActiveUser.getActiveUsername();
-        } else {
-            updatedAt = new Date();
-            updatedBy = ActiveUser.getActiveUsername();
-        }
+        createdAt = new Date();
+        createdBy = ActiveUser.getActiveUsername();
+        terminal = UserTerminal.getTerminal();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = new Date();
+        updatedBy = ActiveUser.getActiveUsername();
+        terminal = UserTerminal.getTerminal();
     }
 }

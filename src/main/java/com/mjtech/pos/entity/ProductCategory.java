@@ -1,5 +1,7 @@
 package com.mjtech.pos.entity;
 
+import com.mjtech.pos.util.ActiveUser;
+import com.mjtech.pos.util.UserTerminal;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +28,9 @@ public class ProductCategory {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "active")
+    private boolean active;
+
     @Column(name = "created_by")
     private String createdBy;
 
@@ -40,4 +45,20 @@ public class ProductCategory {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @Column(name = "terminal")
+    private String terminal;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = new Date();
+        createdBy = ActiveUser.getActiveUsername();
+        terminal = UserTerminal.getTerminal();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = new Date();
+        updatedBy = ActiveUser.getActiveUsername();
+        terminal = UserTerminal.getTerminal();
+    }
 }
