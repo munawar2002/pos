@@ -20,7 +20,7 @@ public class ActiveTerminal {
         return terminal;
     }
 
-    public static int getTerminalId() {
-        return terminal.getId();
+    public static Integer getTerminalId() {
+        return terminal == null ? null : terminal.getId();
     }
 }

@@ -9,6 +9,7 @@ import com.mjtech.pos.dto.OrderTableDto;
 import com.mjtech.pos.dto.PendingInvoiceTableDto;
 import com.mjtech.pos.entity.*;
 import com.mjtech.pos.repository.*;
+import com.mjtech.pos.service.GeneralLedgerService;
 import com.mjtech.pos.service.OrderService;
 import com.mjtech.pos.util.FxmlUtil;
 import javafx.scene.control.TableView;
@@ -44,6 +45,9 @@ public class OrderAndInvoiceHandler {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private GeneralLedgerService generalLedgerService;
 
     @Value("${tax.percentage}")
     private Double taxPercentage;
@@ -182,7 +186,8 @@ public class OrderAndInvoiceHandler {
         updateInvoiceFields(invoiceDto, invoice);
         updateOrderFields(invoice);
 
-        // TODO: ledger entries
+        generalLedgerService.createInvoiceSellLedgerEntry(invoice);
+
 
         // TODO: print invoice
     }

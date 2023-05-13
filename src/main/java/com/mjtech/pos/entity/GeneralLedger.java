@@ -34,9 +34,11 @@ public class GeneralLedger {
     private Date transactionDate;
 
     @Column(name = "transaction_type")
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
     @Column(name = "ledger_type")
+    @Enumerated(EnumType.STRING)
     private LedgerType ledgerType;
 
     @Column(name = "amount")
