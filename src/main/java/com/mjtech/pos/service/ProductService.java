@@ -103,4 +103,13 @@ public class ProductService {
         return productDtos;
     }
 
+    public void updateProductQuantity(int productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException(
+                        String.format("Product not found with id %d", productId)));
+
+        int updatedQuantity = product.getQuantity() + quantity;
+        product.setQuantity(updatedQuantity);
+        productRepository.save(product);
+    }
 }

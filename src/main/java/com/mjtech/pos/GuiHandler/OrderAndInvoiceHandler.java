@@ -11,6 +11,7 @@ import com.mjtech.pos.entity.*;
 import com.mjtech.pos.repository.*;
 import com.mjtech.pos.service.GeneralLedgerService;
 import com.mjtech.pos.service.OrderService;
+import com.mjtech.pos.service.ProductService;
 import com.mjtech.pos.util.FxmlUtil;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -18,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,6 +51,9 @@ public class OrderAndInvoiceHandler {
 
     @Autowired
     private GeneralLedgerService generalLedgerService;
+
+    @Autowired
+    private ProductService productService;
 
     @Value("${tax.percentage}")
     private Double taxPercentage;
@@ -179,13 +185,22 @@ public class OrderAndInvoiceHandler {
         FxmlUtil.populateTableView(pendingInvoiceTableDtoTable, pendingInvoiceTableDtoList, columnMap);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public void generateInvoice(InvoiceDto invoiceDto) {
         Invoice invoice = invoiceRepository.findById(invoiceDto.getInvoiceId())
                 .orElseThrow(() -> new RuntimeException(String.format("Invoice not found with id %s", invoiceDto.getInvoiceId())));
 
+        // update invoice fields
         updateInvoiceFields(invoiceDto, invoice);
         updateOrderFields(invoice);
 
+        // update product quantities
+        List<InvoiceDetail> invoiceDetails = invoiceDetailRepository.findByInvoiceId(invoice.getId());
+        invoiceDetails.forEach(invoiceDetail ->
+                productService.updateProductQuantity(invoiceDetail.getProductId(),
+                -invoiceDetail.getQuantity()));
+
+        // create ledger entries
         generalLedgerService.createInvoiceSellLedgerEntry(invoice);
 
 
