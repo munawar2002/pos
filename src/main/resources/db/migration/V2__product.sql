@@ -7,7 +7,7 @@ created_by VARCHAR(100),
 created_at TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
 updated_by VARCHAR(100),
 updated_at TIMESTAMP,
-terminal VARCHAR(200)
+terminal_id INT
 );
 
 CREATE TABLE PRODUCT (
@@ -25,7 +25,7 @@ created_by VARCHAR(100),
 created_at TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
 updated_by VARCHAR(100),
 updated_at TIMESTAMP,
-terminal VARCHAR(200)
+terminal_id INT
 );
 
 CREATE TABLE PRODUCT_PHOTO (
@@ -36,7 +36,7 @@ created_by VARCHAR(100),
 created_at TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
 updated_by VARCHAR(100),
 updated_at TIMESTAMP,
-terminal VARCHAR(200)
+terminal_id INT
 );
 
 CREATE TABLE SUPPLIER (
@@ -51,7 +51,7 @@ created_by VARCHAR(100),
 created_at TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
 updated_by VARCHAR(100),
 updated_at TIMESTAMP,
-terminal VARCHAR(200)
+terminal_id INT
 );
 
 CREATE TABLE PRODUCT_COMPANY (
@@ -66,7 +66,7 @@ created_by VARCHAR(100),
 created_at TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
 updated_by VARCHAR(100),
 updated_at TIMESTAMP,
-terminal VARCHAR(200)
+terminal_id INT
 );
 
 insert into PRODUCT_CATEGORY (name, description) values ('category1', 'description1');

@@ -1,7 +1,6 @@
 package com.mjtech.pos.entity;
 
 import com.mjtech.pos.util.ActiveUser;
-import com.mjtech.pos.util.ActiveTerminal;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,40 +13,31 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "PRODUCT")
+@Table(name = "TERMINAL")
 @Builder
-public class Product {
+public class Terminal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "code")
-    private String code;
+    @Column(name = "computer_name")
+    private String computerName;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "description")
+    private String description;
 
-    @Column(name = "quantity")
-    private int quantity;
+    @Column(name = "ip_address")
+    private String ipAddress;
 
-    @Column(name = "product_company_id")
-    private int productCompanyId;
+    @Column(name = "mac_address")
+    private String macAddress;
 
-    @Column(name = "category_id")
-    private int categoryId;
+    @Column(name = "location_id")
+    private int locationId;
 
-    @Column(name = "supplier_id")
-    private int supplierId;
-
-    @Column(name = "buy_price")
-    private Double buyPrice;
-
-    @Column(name = "active")
-    private boolean active;
-
-    @Column(name = "sell_price")
-    private Double sellPrice;
+    @Column(name = "expiry_date")
+    private Date expiryDate;
 
     @Column(name = "created_by")
     private String createdBy;
@@ -63,20 +53,15 @@ public class Product {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @Column(name = "terminal_id")
-    private Integer terminalId;
-
     @PrePersist
     public void prePersist() {
         createdAt = new Date();
         createdBy = ActiveUser.getActiveUsername();
-        terminalId = ActiveTerminal.getTerminalId();
     }
 
     @PreUpdate
     public void preUpdate() {
         updatedAt = new Date();
         updatedBy = ActiveUser.getActiveUsername();
-        terminalId = ActiveTerminal.getTerminalId();
     }
 }

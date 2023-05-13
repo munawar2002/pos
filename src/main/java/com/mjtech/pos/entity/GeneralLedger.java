@@ -3,7 +3,7 @@ package com.mjtech.pos.entity;
 import com.mjtech.pos.constant.LedgerType;
 import com.mjtech.pos.constant.TransactionType;
 import com.mjtech.pos.util.ActiveUser;
-import com.mjtech.pos.util.UserTerminal;
+import com.mjtech.pos.util.ActiveTerminal;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,20 +59,20 @@ public class GeneralLedger {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @Column(name = "terminal")
-    private String terminal;
+    @Column(name = "terminal_id")
+    private Integer terminalId;
 
     @PrePersist
     public void prePersist() {
         createdAt = new Date();
         createdBy = ActiveUser.getActiveUsername();
-        terminal = UserTerminal.getTerminal();
+        terminalId = ActiveTerminal.getTerminalId();
     }
 
     @PreUpdate
     public void preUpdate() {
         updatedAt = new Date();
         updatedBy = ActiveUser.getActiveUsername();
-        terminal = UserTerminal.getTerminal();
+        terminalId = ActiveTerminal.getTerminalId();
     }
 }
