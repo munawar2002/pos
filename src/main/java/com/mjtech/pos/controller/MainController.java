@@ -42,6 +42,11 @@ public class MainController {
         FxmlUtil.callForm(receptionOrderStage, "/fxml/receptionOrder.fxml", applicationContext);
     }
 
+    public void refundOrderForm() throws IOException {
+        Stage refundOrderStage = new Stage();
+        FxmlUtil.callForm(refundOrderStage, "/fxml/refundOrder.fxml", applicationContext);
+    }
+
     public void closeApplication() {
         Platform.exit();
     }

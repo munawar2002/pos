@@ -38,6 +38,7 @@ public class CustomerHandler {
                 "Address", "address");
 
         FxmlUtil.populateTableView(customerTableView, customers, columnMap);
+        customerTableView.requestFocus();
     }
 
 }

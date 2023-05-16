@@ -81,14 +81,11 @@ public class ProductService {
 
         List<ProductDto> productDtos = new ArrayList<>();
         products.stream().filter(product -> !ignoreProductIds.contains(product.getId())).forEach(product -> {
-            Supplier supplier = supplierRepository.findById(product.getSupplierId())
-                    .orElseThrow(() -> new RuntimeException(String.format("Supplier not found with id %s", product.getSupplierId())));
+            Supplier supplier = product.getSupplier();
 
-            ProductCategory productCategory = productCategoryRepository.findById(product.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException(String.format("Product Category not found with id %s", product.getCategoryId())));
+            ProductCategory productCategory = product.getProductCategory();
 
-            ProductCompany productCompany = productCompanyRepository.findById(product.getProductCompanyId())
-                    .orElseThrow(() -> new RuntimeException(String.format("Product Company not found with id %s", product.getProductCompanyId())));
+            ProductCompany productCompany = product.getProductCompany();
 
             ProductPhoto productPhoto = productPhotoRepository.findByProductId(product.getId()).orElse(null);
 
@@ -103,11 +100,7 @@ public class ProductService {
         return productDtos;
     }
 
-    public void updateProductQuantity(int productId, int quantity) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException(
-                        String.format("Product not found with id %d", productId)));
-
+    public void updateProductQuantity(Product product, int quantity) {
         int updatedQuantity = product.getQuantity() + quantity;
         product.setQuantity(updatedQuantity);
         productRepository.save(product);

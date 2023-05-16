@@ -31,14 +31,18 @@ public class Product {
     @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "product_company_id")
-    private int productCompanyId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_company_id", nullable = false)
+    private ProductCompany productCompany;
 
-    @Column(name = "category_id")
-    private int categoryId;
 
-    @Column(name = "supplier_id")
-    private int supplierId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id", nullable = false)
+    private ProductCategory productCategory;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private Supplier supplier;
 
     @Column(name = "buy_price")
     private Double buyPrice;

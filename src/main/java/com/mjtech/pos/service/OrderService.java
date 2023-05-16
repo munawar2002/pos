@@ -4,10 +4,13 @@ import com.mjtech.pos.constant.InvoiceStatus;
 import com.mjtech.pos.constant.OrderStatus;
 import com.mjtech.pos.dto.OrderTableDto;
 import com.mjtech.pos.entity.*;
-import com.mjtech.pos.repository.InvoiceDetailRepository;
-import com.mjtech.pos.repository.InvoiceRepository;
-import com.mjtech.pos.repository.OrderDetailRepository;
-import com.mjtech.pos.repository.OrderRepository;
+import com.mjtech.pos.entity.Order;
+import com.mjtech.pos.repository.*;
+import com.mjtech.pos.util.DateUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +40,12 @@ public class OrderService {
     @Autowired
     private InvoiceDetailRepository invoiceDetailRepository;
 
+    @Autowired
+    private ProductRepository productRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Transactional(propagation = Propagation.REQUIRED)
     public Invoice saveOrder(Customer customer, List<OrderTableDto> orderTableDtos, String orderRemarks) {
 
@@ -53,7 +63,7 @@ public class OrderService {
         } else {
             order = new Order();
         }
-        order.setCustomerId(customer.getId());
+        order.setCustomer(customer);
         order.setStatus(OrderStatus.CREATED);
         order.setOrderDate(new Date());
         order.setAmount(total);
@@ -71,10 +81,14 @@ public class OrderService {
             orderDetailRepository.deleteByOrderId(order.getId());
         }
 
+
+
         for(OrderTableDto dto : orderTableDtos) {
+            Product product = productRepository.findById(dto.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found with id " + dto.getProductId()));
             OrderDetail orderDetail = OrderDetail.builder()
-                    .orderId(order.getId())
-                    .productId(dto.getProductId())
+                    .order(order)
+                    .product(product)
                     .quantity(dto.getQuantity())
                     .amount(Double.parseDouble(dto.getPrice()))
                     .build();
@@ -93,10 +107,10 @@ public class OrderService {
             invoice = new Invoice();
             invoice.setInvoiceNo(UUID.randomUUID().toString());
         }
-        invoice.setOrderId(order.getId());
+        invoice.setOrder(order);
         invoice.setInvoiceDate(new Date());
         invoice.setAmount(total);
-        invoice.setCustomerId(customer.getId());
+        invoice.setCustomer(customer);
         invoice.setRefunded(false);
         invoice.setStatus(InvoiceStatus.CREATED);
         invoice.setStatusChangeDate(new Date());
@@ -116,9 +130,9 @@ public class OrderService {
 
         for(OrderDetail orderDetail: orderDetails) {
             InvoiceDetail invoiceDetail = InvoiceDetail.builder()
-                    .invoiceId(savedInvoice.getId())
+                    .invoice(savedInvoice)
                     .quantity(orderDetail.getQuantity())
-                    .productId(orderDetail.getProductId())
+                    .product(orderDetail.getProduct())
                     .amount(orderDetail.getAmount())
                     .build();
             invoiceDetailRepository.save(invoiceDetail);
@@ -132,5 +146,95 @@ public class OrderService {
         return today.getYear() + String.format("%02d", today.getMonth().getValue()) +
                 String.format("%02d", today.getDayOfMonth())  + String.format("%06d", orderId);
     }
+
+
+    public List<Invoice> searchInvoice(Integer customerId, Integer productId, Date fromDate, Date toDate, String orderNo,
+                                       String invoiceNo, Double fromAmount, Double toAmount, Double cashReceived,
+                                       Double cardReceived, InvoiceStatus invoiceStatus) {
+
+        if(fromAmount == null && toAmount != null) {
+            fromAmount = toAmount;
+        } else if (toAmount == null && fromAmount != null) {
+            toAmount = fromAmount;
+        }
+
+        if(fromDate == null && toDate != null) {
+            fromDate = toDate;
+        } else if (toDate == null && fromDate != null) {
+            toDate = fromDate;
+        }
+
+        if(toDate != null) {
+            toDate = DateUtil.getEndOfDayDate(toDate);
+        }
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Invoice> criteriaQuery = criteriaBuilder.createQuery(Invoice.class);
+        Root<Invoice> root = criteriaQuery.from(Invoice.class);
+        Join<Invoice, Order> orderJoin = root.join("order", JoinType.INNER);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        // customerId filter
+        if (customerId != null) {
+            Join<Invoice, Customer> customerJoin = root.join("customer", JoinType.INNER);
+            predicates.add(criteriaBuilder.equal(customerJoin.get("id"), customerId));
+        }
+
+        // productId filter
+        if (productId != null) {
+            Join<Invoice, InvoiceDetail> invoiceItemJoin = root.join("invoiceDetails", JoinType.INNER);
+            predicates.add(criteriaBuilder.equal(invoiceItemJoin.get("product").get("id"), productId));
+        }
+
+        if (fromDate != null && toDate != null) {
+            predicates.add(criteriaBuilder.between(root.get("invoiceDate"), fromDate, toDate));
+        }
+
+        // fromDate filter
+        if (fromDate != null) {
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("invoiceDate"), fromDate));
+        }
+
+        // toDate filter
+        if (toDate != null) {
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("invoiceDate"), toDate));
+        }
+
+        // orderNo filter
+        if (orderNo != null && !orderNo.isEmpty()) {
+            predicates.add(criteriaBuilder.equal(orderJoin.get("orderNo"), orderNo));
+        }
+
+        // invoiceNo filter
+        if (invoiceNo != null && !invoiceNo.isEmpty()) {
+            predicates.add(criteriaBuilder.equal(root.get("invoiceNo"), invoiceNo));
+        }
+
+        if (fromAmount != null && toAmount != null) {
+            predicates.add(criteriaBuilder.between(root.get("totalAmount"), fromAmount, toAmount));
+        }
+
+        // cashReceived filter
+        if (cashReceived != null) {
+            predicates.add(criteriaBuilder.equal(root.get("cashReceived"), cashReceived));
+        }
+
+        // cardReceived filter
+        if (cardReceived != null) {
+            predicates.add(criteriaBuilder.equal(root.get("cardReceived"), cardReceived));
+        }
+
+        // invoiceStatus filter
+        if (invoiceStatus != null) {
+            predicates.add(criteriaBuilder.equal(root.get("status"), invoiceStatus));
+        }
+
+        criteriaQuery.select(root).distinct(true).where(predicates.toArray(new Predicate[]{}));
+
+        TypedQuery<Invoice> query = entityManager.createQuery(criteriaQuery);
+        return query.getResultList();
+    }
+
 
 }

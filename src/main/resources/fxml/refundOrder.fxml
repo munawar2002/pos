@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1200.0" style="-fx-background-color: lightgray;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mjtech.pos.controller.RefundController">
+   <children>
+      <AnchorPane layoutX="-1.0" prefHeight="700.0" prefWidth="1305.0">
+         <children>
+            <AnchorPane layoutX="4.0" layoutY="6.0" prefHeight="688.0" prefWidth="562.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
+               <children>
+                  <Label alignment="CENTER" layoutX="7.0" layoutY="4.0" prefHeight="30.0" prefWidth="554.0" text="Search Invoice To Refund" textFill="#076b29" underline="true">
+                     <font>
+                        <Font name="Arial Bold" size="25.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="productImage" fitHeight="221.0" fitWidth="452.0" layoutX="103.0" layoutY="378.0" pickOnBounds="true" preserveRatio="true" />
+                  <ButtonBar layoutX="8.0" layoutY="637.0" prefHeight="39.0" prefWidth="552.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;" AnchorPane.rightAnchor="5.0">
+                     <buttons>
+                        <Button mnemonicParsing="false" onAction="#searchInvoices" text="Search Invoices">
+                           <font>
+                              <Font name="Arial Bold" size="13.0" />
+                           </font>
+                        </Button>
+                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#readyToRefundBtn" prefHeight="25.0" prefWidth="286.0" text="Ready to Refund">
+                           <font>
+                              <Font name="Arial Bold" size="13.0" />
+                           </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#invoiceClearBtn" text="Clear">
+                           <font>
+                              <Font name="Arial Bold" size="13.0" />
+                           </font>
+                        </Button>
+                     </buttons>
+                     <padding>
+                        <Insets bottom="5.0" right="15.0" top="5.0" />
+                     </padding>
+                  </ButtonBar>
+                  <AnchorPane layoutX="10.0" layoutY="38.0" prefHeight="592.0" prefWidth="550.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
+                     <children>
+                        <TextField fx:id="productTextField" layoutX="114.0" layoutY="45.0" onAction="#productPopup" prefHeight="26.0" prefWidth="223.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="16.0" layoutY="45.0" prefHeight="26.0" prefWidth="93.0" text="Product:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label alignment="CENTER_RIGHT" layoutX="11.0" layoutY="557.0" prefHeight="26.0" prefWidth="70.0" text="Remarks:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="searchRemarksTextField" layoutX="87.0" layoutY="558.0" prefHeight="26.0" prefWidth="452.0" />
+                        <TextField fx:id="customerTextField" layoutX="114.0" layoutY="8.0" onAction="#customerPopup" prefHeight="26.0" prefWidth="223.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="16.0" layoutY="8.0" prefHeight="26.0" prefWidth="93.0" text="Customer:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <DatePicker fx:id="fromDatePicker" layoutX="430.0" layoutY="9.0" prefHeight="26.0" prefWidth="116.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="335.0" layoutY="9.0" prefHeight="26.0" prefWidth="93.0" text="From Date:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <DatePicker fx:id="toDatePicker" layoutX="430.0" layoutY="45.0" prefHeight="26.0" prefWidth="116.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="335.0" layoutY="45.0" prefHeight="26.0" prefWidth="93.0" text="To Date:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="orderNoTextField" layoutX="114.0" layoutY="82.0" prefHeight="26.0" prefWidth="223.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="16.0" layoutY="82.0" prefHeight="26.0" prefWidth="93.0" text="Order No:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="invoiceNoTextField" layoutX="430.0" layoutY="82.0" prefHeight="26.0" prefWidth="116.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="335.0" layoutY="82.0" prefHeight="26.0" prefWidth="93.0" text="Invoice No:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="fromAmountTextField" layoutX="114.0" layoutY="118.0" prefHeight="26.0" prefWidth="223.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="5.0" layoutY="118.0" prefHeight="26.0" prefWidth="104.0" text="From Amount:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="toAmountTextField" layoutX="430.0" layoutY="118.0" prefHeight="26.0" prefWidth="116.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="335.0" layoutY="118.0" prefHeight="26.0" prefWidth="93.0" text="To Amount:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="cashReceivedSearchTextField" layoutX="114.0" layoutY="151.0" prefHeight="26.0" prefWidth="223.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="3.0" layoutY="151.0" prefHeight="26.0" prefWidth="104.0" text="Cash Recvd:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="cardReceivedSearchTextField" layoutX="430.0" layoutY="151.0" prefHeight="26.0" prefWidth="116.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="333.0" layoutY="151.0" prefHeight="26.0" prefWidth="93.0" text="Card Recvd:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="invoiceTable" layoutX="6.0" layoutY="183.0" prefHeight="372.0" prefWidth="537.0">
+                           <columns>
+                              <TableColumn prefWidth="125.0" text="Order No." />
+                              <TableColumn text="Status" />
+                              <TableColumn prefWidth="116.0" text="Order Date" />
+                              <TableColumn minWidth="0.0" prefWidth="121.0" text="Customer" />
+                              <TableColumn minWidth="0.0" prefWidth="94.0" text="Total Amount" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="582.0" layoutY="6.0" prefHeight="688.0" prefWidth="719.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
+               <children>
+                  <Label alignment="CENTER" layoutX="7.0" layoutY="1.0" prefHeight="39.0" prefWidth="708.0" text="Refund Items" textFill="#076b29" underline="true">
+                     <font>
+                        <Font name="Arial Bold" size="25.0" />
+                     </font>
+                  </Label>
+                  <AnchorPane layoutX="9.0" layoutY="39.0" prefHeight="638.0" prefWidth="704.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
+                     <children>
+                        <TextField fx:id="amountTextField" editable="false" layoutX="414.0" layoutY="453.0" prefHeight="26.0" prefWidth="110.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="334.0" layoutY="453.0" prefHeight="26.0" prefWidth="70.0" text="Amount:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="gstTextField" editable="false" layoutX="638.0" layoutY="453.0" prefHeight="26.0" prefWidth="57.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="528.0" layoutY="453.0" prefHeight="26.0" prefWidth="104.0" text="GST:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="orderTable" layoutX="6.0" layoutY="50.0" prefHeight="398.0" prefWidth="692.0">
+                           <columns>
+                              <TableColumn prefWidth="92.0" text="Code" />
+                              <TableColumn prefWidth="226.0" text="Product Name" />
+                              <TableColumn text="Quantity" />
+                              <TableColumn prefWidth="117.0" text="Price" />
+                              <TableColumn prefWidth="96.0" text="Total" />
+                              <TableColumn prefWidth="96.0" text="Select" />
+                           </columns>
+                        </TableView>
+                        <TextField fx:id="discountAmountTextField" layoutX="142.0" layoutY="487.0" prefHeight="26.0" prefWidth="55.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="1.0" layoutY="487.0" prefHeight="26.0" prefWidth="135.0" text="Discount Amount:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="discountPercentTextField" layoutX="296.0" layoutY="487.0" prefHeight="26.0" prefWidth="52.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="196.0" layoutY="487.0" prefHeight="26.0" prefWidth="93.0" text="Discount %">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <ButtonBar layoutX="6.0" layoutY="592.0" prefHeight="39.0" prefWidth="692.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
+                           <buttons>
+                              <Button mnemonicParsing="false" onAction="#generateExchangeBtn" prefHeight="23.0" prefWidth="247.0" text="Generate Exchange">
+                                 <font>
+                                    <Font name="Arial Bold" size="13.0" />
+                                 </font>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#orderClearBtn" text="Clear">
+                                 <font>
+                                    <Font name="Arial Bold" size="13.0" />
+                                 </font>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#generateRefundBtn" text="Generate Refund">
+                                 <font>
+                                    <Font name="Arial Bold" size="13.0" />
+                                 </font>
+                              </Button>
+                           </buttons>
+                           <padding>
+                              <Insets bottom="5.0" right="15.0" top="5.0" />
+                           </padding>
+                        </ButtonBar>
+                        <TextField fx:id="remarksTextField" layoutX="143.0" layoutY="558.0" prefHeight="26.0" prefWidth="552.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="1.0" layoutY="558.0" prefHeight="26.0" prefWidth="135.0" text="Remarks:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <RadioButton fx:id="cashRadioBtn" layoutX="5.0" layoutY="451.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Cash">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="paymentTypeToggleGroup" />
+                           </toggleGroup>
+                           <font>
+                              <Font name="Arial Bold" size="16.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="cardRadioBtn" layoutX="104.0" layoutY="451.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Card" toggleGroup="$paymentTypeToggleGroup">
+                           <font>
+                              <Font name="Arial Bold" size="16.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="cashAndCardRadioBtn" layoutX="201.0" layoutY="451.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="158.0" text="Cash &amp; Card" toggleGroup="$paymentTypeToggleGroup">
+                           <font>
+                              <Font name="Arial Bold" size="16.0" />
+                           </font>
+                        </RadioButton>
+                        <TextField fx:id="totalAmountTextField" editable="false" layoutX="636.0" layoutY="487.0" prefHeight="26.0" prefWidth="57.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="520.0" layoutY="488.0" prefHeight="25.0" prefWidth="110.0" text="Total Amount:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="totalDiscountTextField" editable="false" layoutX="467.0" layoutY="487.0" prefHeight="26.0" prefWidth="55.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="351.0" layoutY="487.0" prefHeight="26.0" prefWidth="110.0" text="Total Discount:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="cashReceivedTextField" layoutX="143.0" layoutY="522.0" prefHeight="26.0" prefWidth="206.0" />
+                        <Label alignment="CENTER_RIGHT" layoutY="522.0" prefHeight="26.0" prefWidth="135.0" text="Cash Received:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="balanceTextField" editable="false" layoutX="472.0" layoutY="522.0" prefHeight="26.0" prefWidth="223.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="351.0" layoutY="523.0" prefHeight="25.0" prefWidth="116.0" text="Balance:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="addProductTextField" layoutX="92.0" layoutY="15.0" onAction="#refundProductPopup" prefHeight="26.0" prefWidth="206.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="8.0" layoutY="15.0" prefHeight="26.0" prefWidth="80.0" text="Product:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="addQuantityTextField" layoutX="368.0" layoutY="15.0" onAction="#addItemInOrderTable" prefHeight="26.0" prefWidth="73.0" />
+                        <Label alignment="CENTER_RIGHT" layoutX="310.0" layoutY="15.0" prefHeight="26.0" prefWidth="46.0" text="Qty:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="addBtn" layoutX="448.0" layoutY="16.0" mnemonicParsing="false" onAction="#addItemInOrderTable" prefHeight="26.0" prefWidth="66.0" text="Add">
+                           <font>
+                              <Font name="Arial Bold" size="14.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="refundWithoutInvoiceBtn" layoutX="519.0" layoutY="16.0" mnemonicParsing="false" onAction="#refundWithoutInvoiceAction" prefHeight="26.0" prefWidth="177.0" text="Refund Without Invoice">
+                           <font>
+                              <Font name="Arial Bold" size="14.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -90,6 +91,14 @@ public class CustomerPopupController implements ControllerInterface, Initializab
 
         customerPopupTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // Double-click detected
+                this.selectedCustomer = customerPopupTable.getSelectionModel().getSelectedItem();
+                Stage stage = (Stage) nameTextField.getScene().getWindow();
+                stage.close();
+            }
+        });
+
+        customerPopupTable.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) { // Double-click detected
                 this.selectedCustomer = customerPopupTable.getSelectionModel().getSelectedItem();
                 Stage stage = (Stage) nameTextField.getScene().getWindow();
                 stage.close();

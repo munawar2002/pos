@@ -34,36 +34,36 @@ public class GeneralLedgerService {
                 .orElseThrow(() -> new RuntimeException("Account not found with name "+ AccountName.CASH));
 
         createLedgerEntry(LedgerType.CREDIT, TransactionType.SELL,
-                saleAccount.getId(), invoice.getTotalAmount(), invoice.getId());
+                saleAccount, invoice.getTotalAmount(), invoice);
 
         if(invoice.getPaymentType() == PaymentType.CASH) {
             createLedgerEntry(LedgerType.DEBIT, TransactionType.SELL,
-                    cashAccount.getId(), invoice.getTotalAmount(), invoice.getId());
+                    cashAccount, invoice.getTotalAmount(), invoice);
         } else if (invoice.getPaymentType() == PaymentType.CARD) {
             createLedgerEntry(LedgerType.DEBIT, TransactionType.SELL,
-                    cardAccount.getId(), invoice.getTotalAmount(), invoice.getId());
+                    cardAccount, invoice.getTotalAmount(), invoice);
         } else if (invoice.getPaymentType() == PaymentType.CASH_AND_CARD) {
             createLedgerEntry(LedgerType.DEBIT, TransactionType.SELL,
-                    cashAccount.getId(), invoice.getCashReceived(), invoice.getId());
+                    cashAccount, invoice.getCashReceived(), invoice);
             createLedgerEntry(LedgerType.DEBIT, TransactionType.SELL,
-                    cardAccount.getId(), invoice.getCardReceived(), invoice.getId());
+                    cardAccount, invoice.getCardReceived(), invoice);
         }
     }
 
 
     public void createLedgerEntry(LedgerType ledgerType,
                                   TransactionType transactionType,
-                                  int accountId,
+                                  Account account,
                                   Double amount,
-                                  int invoiceId) {
+                                  Invoice invoice) {
 
         GeneralLedger generalLedger = GeneralLedger.builder()
                 .ledgerType(ledgerType)
                 .amount(amount)
-                .accountId(accountId)
+                .account(account)
                 .transactionDate(new Date())
                 .transactionType(transactionType)
-                .invoiceId(invoiceId)
+                .invoice(invoice)
                 .description("")
                 .build();
 

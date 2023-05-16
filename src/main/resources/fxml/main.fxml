@@ -17,6 +17,7 @@
           <Menu mnemonicParsing="false" text="Order Entry">
             <items>
               <MenuItem fx:id="orderMenuItem" mnemonicParsing="false" onAction="#receptionOrderForm" text="Reception Order" />
+                  <MenuItem fx:id="orderMenuItem1" mnemonicParsing="false" onAction="#refundOrderForm" text="Refund Order" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Inventory">

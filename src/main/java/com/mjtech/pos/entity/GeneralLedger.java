@@ -24,11 +24,13 @@ public class GeneralLedger {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "account_id")
-    private int accountId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
-    @Column(name = "invoice_id")
-    private int invoiceId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "invoice_id", nullable = false)
+    private Invoice invoice;
 
     @Column(name = "transaction_date")
     private Date transactionDate;

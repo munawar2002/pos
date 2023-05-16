@@ -1,10 +1,8 @@
 package com.mjtech.pos.GuiHandler;
 
 import com.mjtech.pos.dto.ProductDto;
-import com.mjtech.pos.entity.Product;
-import com.mjtech.pos.entity.ProductPhoto;
-import com.mjtech.pos.repository.ProductPhotoRepository;
-import com.mjtech.pos.repository.ProductRepository;
+import com.mjtech.pos.entity.*;
+import com.mjtech.pos.repository.*;
 import com.mjtech.pos.service.ProductService;
 import com.mjtech.pos.util.ActiveUser;
 import com.mjtech.pos.util.FxmlUtil;
@@ -22,6 +20,12 @@ public class ProductHandler {
     private final ProductRepository productRepository;
 
     private final ProductPhotoRepository productPhotoRepository;
+
+    private final ProductCompanyRepository productCompanyRepository;
+
+    private final ProductCategoryRepository productCategoryRepository;
+
+    private final SupplierRepository supplierRepository;
 
     private final ProductService productService;
 
@@ -51,12 +55,21 @@ public class ProductHandler {
             return;
         }
 
+        ProductCompany productCompany = productCompanyRepository.findById(productCompanyId)
+                .orElseThrow(() -> new RuntimeException("Product company not found with id " + productCompanyId));
+
+        ProductCategory productCategory = productCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Product category not found with id " + categoryId));
+
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new RuntimeException("Product supplier not found with id " + supplierId));
+
         Product product = Product.builder()
                 .code(code)
                 .name(name)
-                .categoryId(categoryId)
-                .productCompanyId(productCompanyId)
-                .supplierId(supplierId)
+                .productCategory(productCategory)
+                .productCompany(productCompany)
+                .supplier(supplier)
                 .buyPrice(buyPrice)
                 .sellPrice(sellPrice)
                 .quantity(quantity)
@@ -88,11 +101,20 @@ public class ProductHandler {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException(String.format("Product not found with id %s", productId)));
 
+        ProductCompany productCompany = productCompanyRepository.findById(productCompanyId)
+                .orElseThrow(() -> new RuntimeException("Product company new found with id " + productCompanyId));
+
+        ProductCategory productCategory = productCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Product category not found with id " + categoryId));
+
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new RuntimeException("Product supplier not found with id " + supplierId));
+
         product.setCode(code);
         product.setName(name);
-        product.setCategoryId(categoryId);
-        product.setProductCompanyId(productCompanyId);
-        product.setSupplierId(supplierId);
+        product.setProductCategory(productCategory);
+        product.setProductCompany(productCompany);
+        product.setSupplier(supplier);
         product.setBuyPrice(buyPrice);
         product.setSellPrice(sellPrice);
         product.setQuantity(quantity);

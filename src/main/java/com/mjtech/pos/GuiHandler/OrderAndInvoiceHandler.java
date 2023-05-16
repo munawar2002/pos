@@ -15,6 +15,7 @@ import com.mjtech.pos.service.ProductService;
 import com.mjtech.pos.util.FxmlUtil;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class OrderAndInvoiceHandler {
 
     @Autowired
@@ -65,72 +67,91 @@ public class OrderAndInvoiceHandler {
                           TextField gstTextField,
                           TextField orderRemarksTextField,
                           TextField remarksTextField) {
-        String orderRemarks = orderRemarksTextField.getText();
-        Invoice invoice = orderService.saveOrder(customer, orderTableDtoList, orderRemarks);
-        populateInvoiceTable(invoiceTable, invoice.getId(), totalAmountTextField, gstTextField, remarksTextField);
-        return invoice;
+        try {
+            String orderRemarks = orderRemarksTextField.getText();
+            Invoice invoice = orderService.saveOrder(customer, orderTableDtoList, orderRemarks);
+            populateInvoiceTable(invoiceTable, invoice.getId(), totalAmountTextField, gstTextField, remarksTextField);
+            return invoice;
+        } catch (Exception e) {
+            String errorMessage = String.format("ReceptionForm: Failed while saving order for customer %s with amount %s",
+                    customer.getFullName(), totalAmountTextField.getText());
+            log.error(errorMessage, e);
+            FxmlUtil.callErrorAlert("Failed while saving order. Please contact administrator!");
+            throw  new RuntimeException(errorMessage, e);
+        }
     }
 
     public void populateInvoiceTable(TableView<OrderTableDto> invoiceTable, int invoiceId,
                                      TextField totalAmountTextField,
                                      TextField gstTextField,
                                      TextField remarksTextField) {
-        Invoice invoice = invoiceRepository.findById(invoiceId)
-                .orElseThrow(()-> new RuntimeException(String.format("Invoice not found with id %s", invoiceId)));
+        try {
+            Invoice invoice = invoiceRepository.findById(invoiceId)
+                    .orElseThrow(() -> new RuntimeException(String.format("Invoice not found with id %s", invoiceId)));
 
-        List<OrderTableDto> orderTableDtos = createOrderTableDto(invoice);
-        var columnMap = Map.of(
-                "Code", "code",
-                "Product Name", "productName",
-                "Quantity", "quantity",
-                "Price", "price",
-                "Total", "total");
+            List<OrderTableDto> orderTableDtos = createOrderTableDto(invoice);
+            var columnMap = Map.of(
+                    "Code", "code",
+                    "Product Name", "productName",
+                    "Quantity", "quantity",
+                    "Price", "price",
+                    "Total", "total");
 
-        FxmlUtil.populateTableView(invoiceTable, orderTableDtos, columnMap);
+            FxmlUtil.populateTableView(invoiceTable, orderTableDtos, columnMap);
 
-        double totalInvoiceAmount = orderTableDtos.stream().mapToDouble(t -> Double.parseDouble(t.getTotal())).sum();
-        totalAmountTextField.setText(Formats.getDecimalFormat().format(totalInvoiceAmount));
+            double totalInvoiceAmount = orderTableDtos.stream().mapToDouble(t -> Double.parseDouble(t.getTotal())).sum();
+            totalAmountTextField.setText(Formats.getDecimalFormat().format(totalInvoiceAmount));
 
-        double percentageAmount = (totalInvoiceAmount * taxPercentage) / 100;
-        gstTextField.setText(Formats.getDecimalFormat().format(percentageAmount));
+            double percentageAmount = (totalInvoiceAmount * taxPercentage) / 100;
+            gstTextField.setText(Formats.getDecimalFormat().format(percentageAmount));
 
-        remarksTextField.setText(invoice.getRemarks());
+            remarksTextField.setText(invoice.getRemarks());
+        } catch (Exception e) {
+            String errorMessage = String.format("ReceptionForm: Failed while populating invoice table for invoiceId %d", invoiceId);
+            log.error(errorMessage, e);
+            FxmlUtil.callErrorAlert("Failed while populating invoice table. Please contact administrator!");
+            throw new RuntimeException(errorMessage, e);
+        }
     }
 
     public void populateOrderTableByOrderNo(String orderNo, TableView<OrderTableDto> orderTable, TextField orderRemarksTextField) {
-        if(!orderTable.getItems().isEmpty()) {
-            boolean result = FxmlUtil.callConfirmationAlert("Are you sure you want to load table with selected order." +
-                    " Your existing data in order table will be lost");
-            if(!result) {
-                return;
+        try {
+            if (!orderTable.getItems().isEmpty()) {
+                boolean result = FxmlUtil.callConfirmationAlert("Are you sure you want to load table with selected order." +
+                        " Your existing data in order table will be lost");
+                if (!result) {
+                    return;
+                }
             }
+            Order order = orderRepository.findByOrderNo(orderNo)
+                    .orElseThrow(() -> new RuntimeException(String.format("Order not found with orderNo %s", orderNo)));
+
+            List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getId());
+
+            List<OrderTableDto> orderTableDtos = mapToOrderTableDto(orderDetails, order);
+
+            var columnMap = Map.of(
+                    "Code", "code",
+                    "Product Name", "productName",
+                    "Quantity", "quantity",
+                    "Price", "price",
+                    "Total", "total");
+
+            FxmlUtil.populateTableView(orderTable, orderTableDtos, columnMap);
+
+            orderRemarksTextField.setText(order.getRemarks());
+        } catch (Exception e) {
+            String errorMessage = String.format("ReceptionForm: Failed while populating order table with orderNo %s", orderNo);
+            log.error(errorMessage, e);
+            FxmlUtil.callErrorAlert("Failed while populating order table. Please contact administrator!");
+            throw new RuntimeException(errorMessage, e);
         }
-        Order order = orderRepository.findByOrderNo(orderNo)
-                .orElseThrow(() -> new RuntimeException(String.format("Order not found with orderNo %s", orderNo)));
-
-        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getId());
-
-        List<OrderTableDto> orderTableDtos = mapToOrderTableDto(orderDetails, order);
-
-        var columnMap = Map.of(
-                "Code", "code",
-                "Product Name", "productName",
-                "Quantity", "quantity",
-                "Price", "price",
-                "Total", "total");
-
-        FxmlUtil.populateTableView(orderTable, orderTableDtos, columnMap);
-
-        orderRemarksTextField.setText(order.getRemarks());
     }
 
     private List<OrderTableDto> mapToOrderTableDto(List<OrderDetail> orderDetails, Order order) {
         var list = new ArrayList<OrderTableDto>();
         for(OrderDetail orderDetail : orderDetails) {
-            Product product = productRepository.findById(orderDetail.getProductId())
-                    .orElseThrow(() -> new RuntimeException(
-                            String.format("Product not found with id %s", orderDetail.getProductId())));
-            ;
+            Product product =orderDetail.getProduct();
             OrderTableDto dto = OrderTableDto.builder()
                     .code(product.getCode())
                     .productName(product.getName())
@@ -150,8 +171,7 @@ public class OrderAndInvoiceHandler {
         List<InvoiceDetail> invoiceDetails = invoiceDetailRepository.findByInvoiceId(invoice.getId());
         var orderTableDtos = new ArrayList<OrderTableDto>();
         for(InvoiceDetail invoiceDetail: invoiceDetails) {
-            Product product = productRepository.findById(invoiceDetail.getProductId())
-                    .orElseThrow(()-> new RuntimeException(String.format("Product not found with id %s", invoiceDetail.getProductId())));
+            Product product = invoiceDetail.getProduct();
             var dto = OrderTableDto.builder()
                     .code(product.getCode())
                     .productName(product.getName())
@@ -167,49 +187,64 @@ public class OrderAndInvoiceHandler {
     }
 
     public void populatePendingInvoiceTable(TextField orderNoSearchTextField, TableView<PendingInvoiceTableDto> pendingInvoiceTableDtoTable) {
-        List<Invoice> invoices = invoiceRepository.findByStatus(InvoiceStatus.CREATED).stream()
-                .sorted(Comparator.comparing(Invoice::getInvoiceDate).reversed())
-                .collect(Collectors.toList());
+        try {
+            List<Invoice> invoices = invoiceRepository.findByStatus(InvoiceStatus.CREATED).stream()
+                    .sorted(Comparator.comparing(Invoice::getInvoiceDate).reversed())
+                    .collect(Collectors.toList());
 
-        String orderNoSearch = orderNoSearchTextField.getText();
+            String orderNoSearch = orderNoSearchTextField.getText();
 
-        var pendingInvoiceTableDtoList = mapToPendingInvoiceTableDtos(invoices, orderNoSearch);
-        var columnMap = Map.of(
-                "Order No.", "orderNo",
-                "Status", "status",
-                "Order Date", "orderDate",
-                "Customer", "customer",
-                "Total Amount", "amount",
-                "Remarks", "remarks");
+            var pendingInvoiceTableDtoList = mapToPendingInvoiceTableDtos(invoices, orderNoSearch);
+            var columnMap = Map.of(
+                    "Order No.", "orderNo",
+                    "Status", "status",
+                    "Order Date", "orderDate",
+                    "Customer", "customer",
+                    "Total Amount", "amount",
+                    "Remarks", "remarks");
 
-        FxmlUtil.populateTableView(pendingInvoiceTableDtoTable, pendingInvoiceTableDtoList, columnMap);
+            FxmlUtil.populateTableView(pendingInvoiceTableDtoTable, pendingInvoiceTableDtoList, columnMap);
+        } catch (Exception e) {
+            String errorMessage = String.format("ReceptionForm: Failed while populating pending invoice table with orderNo %s",
+                    orderNoSearchTextField.getText());
+            log.error(errorMessage, e);
+            FxmlUtil.callErrorAlert("Failed while populating pending invoice table. Please contact administrator!");
+            throw new RuntimeException(errorMessage, e);
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void generateInvoice(InvoiceDto invoiceDto) {
-        Invoice invoice = invoiceRepository.findById(invoiceDto.getInvoiceId())
-                .orElseThrow(() -> new RuntimeException(String.format("Invoice not found with id %s", invoiceDto.getInvoiceId())));
+        try {
+            Invoice invoice = invoiceRepository.findById(invoiceDto.getInvoiceId())
+                    .orElseThrow(() -> new RuntimeException(String.format("Invoice not found with id %s", invoiceDto.getInvoiceId())));
 
-        // update invoice fields
-        updateInvoiceFields(invoiceDto, invoice);
-        updateOrderFields(invoice);
+            // update invoice fields
+            updateInvoiceFields(invoiceDto, invoice);
+            updateOrderFields(invoice);
 
-        // update product quantities
-        List<InvoiceDetail> invoiceDetails = invoiceDetailRepository.findByInvoiceId(invoice.getId());
-        invoiceDetails.forEach(invoiceDetail ->
-                productService.updateProductQuantity(invoiceDetail.getProductId(),
-                -invoiceDetail.getQuantity()));
+            // update product quantities
+            List<InvoiceDetail> invoiceDetails = invoiceDetailRepository.findByInvoiceId(invoice.getId());
+            invoiceDetails.forEach(invoiceDetail ->
+                    productService.updateProductQuantity(invoiceDetail.getProduct(),
+                            -invoiceDetail.getQuantity()));
 
-        // create ledger entries
-        generalLedgerService.createInvoiceSellLedgerEntry(invoice);
+            // create ledger entries
+            generalLedgerService.createInvoiceSellLedgerEntry(invoice);
 
 
-        // TODO: print invoice
+            // TODO: print invoice
+        } catch (Exception e) {
+            String errorMessage = String.format("ReceptionForm: Failed while generating invoice for invoiceId %d",
+                    invoiceDto.getInvoiceId());
+            log.error(errorMessage, e);
+            FxmlUtil.callErrorAlert("Failed while generating invoice for customer. Please contact administrator!");
+            throw new RuntimeException(errorMessage, e);
+        }
     }
 
     private void updateOrderFields(Invoice invoice) {
-        Order order = orderRepository.findById(invoice.getOrderId())
-                .orElseThrow(() -> new RuntimeException(String.format("Order not found with id %s", invoice.getOrderId())));
+        Order order = invoice.getOrder();
         order.setStatus(OrderStatus.PAID);
         orderRepository.save(order);
     }
@@ -255,10 +290,8 @@ public class OrderAndInvoiceHandler {
 
         List<PendingInvoiceTableDto> list = new ArrayList<>();
         for(Invoice invoice: invoices) {
-            Order order = orderRepository.findById(invoice.getOrderId())
-                    .orElseThrow(() -> new RuntimeException(String.format("Order not found with id %s", invoice.getOrderId())));
-            Customer customer = customerRepository.findById(invoice.getCustomerId())
-                    .orElseThrow(() -> new RuntimeException(String.format("Customer not found with id %s", invoice.getCustomerId())));
+            Order order = invoice.getOrder();
+            Customer customer = invoice.getCustomer();
 
             PendingInvoiceTableDto dto = PendingInvoiceTableDto.builder()
                     .amount(invoice.getAmount())

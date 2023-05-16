@@ -27,21 +27,8 @@ public class UserService {
     private RoleRepository roleRepository;
 
     public User findUserWithRoles(String username, String password) {
-        Optional<User> optionalUser = userRepository.findByUsernameAndPassword(username, password);
-
-        if(optionalUser.isEmpty()) {
-            return  null;
-        }
-        User user = optionalUser.get();
-        List<UserRole> userRoles = userRoleRepository.findByUserId(user.getId());
-        List<Integer> roleIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList());
-        if(roleIds.isEmpty()) {
-            user.setRoles(new ArrayList<>());
-        } else {
-            List<Role> allUserRoles = roleRepository.findByIdIn(roleIds);
-            user.setRoles(allUserRoles);
-        }
-        return user;
+        return userRepository.findByUsernameAndPassword(username, password)
+                .orElse(null);
     }
 
 }
