@@ -7,6 +7,7 @@ import com.mjtech.pos.entity.*;
 import com.mjtech.pos.entity.Order;
 import com.mjtech.pos.repository.*;
 import com.mjtech.pos.util.DateUtil;
+import com.mjtech.pos.util.Util;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -73,14 +74,13 @@ public class OrderService {
         order.setRemarks(orderRemarks);
 
         order = orderRepository.save(order);
-        order.setOrderNo(createOrderNo(order.getId()));
+        order.setOrderNo(Util.createOrderNo(order.getId()));
         order = orderRepository.save(order);
 
         if(existingOrder) {
             log.info("Deleting existing orderDetails for orderId {}", order.getId());
             orderDetailRepository.deleteByOrderId(order.getId());
         }
-
 
 
         for(OrderTableDto dto : orderTableDtos) {
@@ -121,7 +121,8 @@ public class OrderService {
         List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getId());
 
         if(existingOrder) {
-            invoiceDetailRepository.deleteByInvoiceId(invoice.getId());
+            invoice.getInvoiceDetails().clear();
+            invoiceDetailRepository.deleteByInvoice(invoice);
             log.info("Deleted existing invoice details for invoiceId {} orderId {}", invoice.getId(), order.getId());
         }
 
@@ -135,18 +136,12 @@ public class OrderService {
                     .product(orderDetail.getProduct())
                     .amount(orderDetail.getAmount())
                     .build();
-            invoiceDetailRepository.save(invoiceDetail);
+            invoice.getInvoiceDetails().add(invoiceDetail);
         }
+        invoice = invoiceRepository.save(invoice);
         log.info("Created new invoiceDetails for invoiceId {} orderId {}", invoice.getId(), order.getId());
         return invoice;
     }
-
-    private static String createOrderNo(int orderId) {
-        LocalDate today = LocalDate.now();
-        return today.getYear() + String.format("%02d", today.getMonth().getValue()) +
-                String.format("%02d", today.getDayOfMonth())  + String.format("%06d", orderId);
-    }
-
 
     public List<Invoice> searchInvoice(Integer customerId, Integer productId, Date fromDate, Date toDate, String orderNo,
                                        String invoiceNo, Double fromAmount, Double toAmount, Double cashReceived,
@@ -203,12 +198,13 @@ public class OrderService {
 
         // orderNo filter
         if (orderNo != null && !orderNo.isEmpty()) {
-            predicates.add(criteriaBuilder.equal(orderJoin.get("orderNo"), orderNo));
+            predicates.add(criteriaBuilder.like(orderJoin.get("orderNo"), "%" + orderNo.toLowerCase() + "%"));
         }
 
         // invoiceNo filter
         if (invoiceNo != null && !invoiceNo.isEmpty()) {
-            predicates.add(criteriaBuilder.equal(root.get("invoiceNo"), invoiceNo));
+            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("invoiceNo")),
+                    "%" + invoiceNo.toLowerCase() + "%"));
         }
 
         if (fromAmount != null && toAmount != null) {

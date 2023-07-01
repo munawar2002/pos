@@ -13,7 +13,8 @@ import java.util.Optional;
 public interface InvoiceRepository extends JpaRepository<Invoice, Integer>, JpaSpecificationExecutor<Invoice> {
 
     List<Invoice> findByStatus(InvoiceStatus invoiceStatus);
-
     Optional<Invoice> findByOrderId(int orderId);
+
+    Optional<Invoice> findByRefundOrderId(int orderId);
 
 }

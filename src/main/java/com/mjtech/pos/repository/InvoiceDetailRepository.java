@@ -1,5 +1,6 @@
 package com.mjtech.pos.repository;
 
+import com.mjtech.pos.entity.Invoice;
 import com.mjtech.pos.entity.InvoiceDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,5 +12,5 @@ public interface InvoiceDetailRepository extends JpaRepository<InvoiceDetail, In
 
     List<InvoiceDetail> findByInvoiceId(int invoiceId);
 
-    void deleteByInvoiceId(int invoiceId);
+    void deleteByInvoice(Invoice invoice);
 }

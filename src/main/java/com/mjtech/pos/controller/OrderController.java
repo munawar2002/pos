@@ -6,7 +6,7 @@ import com.mjtech.pos.constant.Gender;
 import com.mjtech.pos.constant.PaymentType;
 import com.mjtech.pos.dto.InvoiceDto;
 import com.mjtech.pos.dto.OrderTableDto;
-import com.mjtech.pos.dto.PendingInvoiceTableDto;
+import com.mjtech.pos.dto.InvoiceTableDto;
 import com.mjtech.pos.dto.ProductDto;
 import com.mjtech.pos.entity.*;
 import com.mjtech.pos.repository.ProductRepository;
@@ -68,7 +68,7 @@ public class OrderController implements ControllerInterface, Initializable {
     private TextField remarksTextField, orderRemarksTextField;
 
     @FXML
-    private TableView<PendingInvoiceTableDto> pendingInvoiceTable;
+    private TableView<InvoiceTableDto> pendingInvoiceTable;
 
     @FXML
     private TableView<OrderTableDto> invoiceTable;
@@ -243,7 +243,7 @@ public class OrderController implements ControllerInterface, Initializable {
 
     @FXML
     public void editOrderBtn() {
-        PendingInvoiceTableDto selectedItem = pendingInvoiceTable.getSelectionModel().getSelectedItem();
+        InvoiceTableDto selectedItem = pendingInvoiceTable.getSelectionModel().getSelectedItem();
         if(selectedItem == null) {
             FxmlUtil.callErrorAlert("Please click order in pending invoice table to edit!");
             return;
@@ -326,7 +326,7 @@ public class OrderController implements ControllerInterface, Initializable {
 
         pendingInvoiceTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
-                PendingInvoiceTableDto selectedItem = pendingInvoiceTable.getSelectionModel().getSelectedItem();
+                InvoiceTableDto selectedItem = pendingInvoiceTable.getSelectionModel().getSelectedItem();
                 if(selectedItem == null) return;
                 orderAndInvoiceHandler.populateInvoiceTable(invoiceTable, selectedItem.getInvoiceId(),
                         amountTextField, gstTextField, remarksTextField);

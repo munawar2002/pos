@@ -6,8 +6,9 @@ import com.mjtech.pos.constant.OrderStatus;
 import com.mjtech.pos.constant.PaymentType;
 import com.mjtech.pos.dto.InvoiceDto;
 import com.mjtech.pos.dto.OrderTableDto;
-import com.mjtech.pos.dto.PendingInvoiceTableDto;
+import com.mjtech.pos.dto.InvoiceTableDto;
 import com.mjtech.pos.entity.*;
+import com.mjtech.pos.mapper.DtoMapper;
 import com.mjtech.pos.repository.*;
 import com.mjtech.pos.service.GeneralLedgerService;
 import com.mjtech.pos.service.OrderService;
@@ -16,7 +17,6 @@ import com.mjtech.pos.util.FxmlUtil;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -61,7 +61,7 @@ public class OrderAndInvoiceHandler {
     private Double taxPercentage;
 
     public Invoice saveOrder(Customer customer, List<OrderTableDto> orderTableDtoList,
-                          TableView<PendingInvoiceTableDto> pendingInvoiceTableDtoTable,
+                          TableView<InvoiceTableDto> pendingInvoiceTableDtoTable,
                           TableView<OrderTableDto> invoiceTable,
                           TextField totalAmountTextField,
                           TextField gstTextField,
@@ -88,8 +88,10 @@ public class OrderAndInvoiceHandler {
         try {
             Invoice invoice = invoiceRepository.findById(invoiceId)
                     .orElseThrow(() -> new RuntimeException(String.format("Invoice not found with id %s", invoiceId)));
+            List<InvoiceDetail> invoiceDetails = invoiceDetailRepository.findByInvoiceId(invoice.getId());
 
-            List<OrderTableDto> orderTableDtos = createOrderTableDto(invoice);
+            List<OrderTableDto> orderTableDtos = DtoMapper.mapToOrderTableDto(invoice, invoiceDetails);
+
             var columnMap = Map.of(
                     "Code", "code",
                     "Product Name", "productName",
@@ -167,26 +169,7 @@ public class OrderAndInvoiceHandler {
         return list;
     }
 
-    private ArrayList<OrderTableDto> createOrderTableDto(Invoice invoice) {
-        List<InvoiceDetail> invoiceDetails = invoiceDetailRepository.findByInvoiceId(invoice.getId());
-        var orderTableDtos = new ArrayList<OrderTableDto>();
-        for(InvoiceDetail invoiceDetail: invoiceDetails) {
-            Product product = invoiceDetail.getProduct();
-            var dto = OrderTableDto.builder()
-                    .code(product.getCode())
-                    .productName(product.getName())
-                    .productId(product.getId())
-                    .price(Formats.getDecimalFormat().format(invoiceDetail.getAmount()))
-                    .quantity(invoiceDetail.getQuantity())
-                    .total(Formats.getDecimalFormat().format(invoiceDetail.getAmount() * invoiceDetail.getQuantity()))
-                    .build();
-
-            orderTableDtos.add(dto);
-        }
-        return orderTableDtos;
-    }
-
-    public void populatePendingInvoiceTable(TextField orderNoSearchTextField, TableView<PendingInvoiceTableDto> pendingInvoiceTableDtoTable) {
+    public void populatePendingInvoiceTable(TextField orderNoSearchTextField, TableView<InvoiceTableDto> pendingInvoiceTableDtoTable) {
         try {
             List<Invoice> invoices = invoiceRepository.findByStatus(InvoiceStatus.CREATED).stream()
                     .sorted(Comparator.comparing(Invoice::getInvoiceDate).reversed())
@@ -194,7 +177,7 @@ public class OrderAndInvoiceHandler {
 
             String orderNoSearch = orderNoSearchTextField.getText();
 
-            var pendingInvoiceTableDtoList = mapToPendingInvoiceTableDtos(invoices, orderNoSearch);
+            var pendingInvoiceTableDtoList = DtoMapper.mapToPendingInvoiceTableDtos(invoices, orderNoSearch, false);
             var columnMap = Map.of(
                     "Order No.", "orderNo",
                     "Status", "status",
@@ -284,33 +267,5 @@ public class OrderAndInvoiceHandler {
 
 
         invoiceRepository.save(invoice);
-    }
-
-    private List<PendingInvoiceTableDto> mapToPendingInvoiceTableDtos(List<Invoice> invoices, String orderNoSearch) {
-
-        List<PendingInvoiceTableDto> list = new ArrayList<>();
-        for(Invoice invoice: invoices) {
-            Order order = invoice.getOrder();
-            Customer customer = invoice.getCustomer();
-
-            PendingInvoiceTableDto dto = PendingInvoiceTableDto.builder()
-                    .amount(invoice.getAmount())
-                    .customer(customer.getFullName())
-                    .orderDate(Formats.getSimpleDateFormat().format(order.getOrderDate()))
-                    .status(invoice.getStatus().name())
-                    .orderNo(order.getOrderNo())
-                    .invoiceId(invoice.getId())
-                    .remarks(invoice.getRemarks())
-                    .build();
-            list.add(dto);
-        }
-
-        if(StringUtils.isNotEmpty(orderNoSearch)) {
-            list = list.stream()
-                    .filter(dto -> dto.getOrderNo().contains(orderNoSearch))
-                    .collect(Collectors.toList());
-        }
-
-        return list;
     }
 }

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PendingInvoiceTableDto {
+public class InvoiceTableDto {
     private String orderNo;
     private String status;
     private String orderDate;
@@ -13,4 +13,9 @@ public class PendingInvoiceTableDto {
     private Double amount;
     private int invoiceId;
     private String remarks;
+    private String paymentType;
+    private Double totalDiscount;
+    private Double cashReceived;
+    private Double cardReceived;
+
 }
