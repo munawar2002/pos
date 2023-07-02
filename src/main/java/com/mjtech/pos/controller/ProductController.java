@@ -8,6 +8,7 @@ import com.mjtech.pos.dto.ProductDto;
 import com.mjtech.pos.util.FxmlUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -87,6 +88,9 @@ public class ProductController implements Initializable {
     private TextField quantitySearchTextField;
 
     @FXML
+    private CheckBox isServiceCheckbox;
+
+    @FXML
     private TableView<ProductDto> productTable;
 
     @FXML
@@ -144,8 +148,8 @@ public class ProductController implements Initializable {
             return;
         }
 
-        productHandler.saveProduct(codeTextField, nameTextField, selectedCategory.getId(),
-                selectedCompany.getId(), selectedSupplier.getId(), buyPriceTextField, sellPriceTextField, quantityTextField);
+        productHandler.saveProduct(codeTextField, nameTextField, selectedCategory.getId(), selectedCompany.getId(),
+                selectedSupplier.getId(), buyPriceTextField, sellPriceTextField, quantityTextField, isServiceCheckbox.isSelected());
         searchBtn();
     }
 
@@ -156,7 +160,8 @@ public class ProductController implements Initializable {
         }
 
         productHandler.editProduct(selectedProduct.getId(), codeTextField, nameTextField, selectedCategory.getId(),
-                selectedCompany.getId(), selectedSupplier.getId(), buyPriceTextField, sellPriceTextField, quantityTextField);
+                selectedCompany.getId(), selectedSupplier.getId(), buyPriceTextField, sellPriceTextField, quantityTextField,
+                isServiceCheckbox.isSelected());
         searchBtn();
     }
 
@@ -185,6 +190,7 @@ public class ProductController implements Initializable {
         buyPriceSearchTextField.clear();
         sellPriceSearchTextField.clear();
         quantitySearchTextField.clear();
+        isServiceCheckbox.setSelected(false);
 
         productTable.getItems().clear();
     }
@@ -318,7 +324,7 @@ public class ProductController implements Initializable {
                 buyPriceTextField.setText(selectedProduct.getBuyPrice().toString());
                 sellPriceTextField.setText(selectedProduct.getSellPrice().toString());
                 quantityTextField.setText(String.valueOf(selectedProduct.getQuantity()));
-
+                isServiceCheckbox.setSelected(selectedProduct.isService());
                 if(selectedProduct.getImage() != null) {
                     Image image = new Image(new ByteArrayInputStream(selectedProduct.getImage()));
                     productImage.setImage(image);

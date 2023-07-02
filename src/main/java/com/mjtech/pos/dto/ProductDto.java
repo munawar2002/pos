@@ -17,6 +17,7 @@ public class ProductDto {
     private String supplierName;
     private Double buyPrice;
     private int quantity;
+    private boolean isService;
     private Double sellPrice;
     private String createdBy;
     private Date createdAt;

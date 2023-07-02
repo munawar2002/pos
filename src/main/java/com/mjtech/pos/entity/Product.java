@@ -50,6 +50,9 @@ public class Product {
     @Column(name = "active")
     private boolean active;
 
+    @Column(name = "is_service")
+    private boolean isService;
+
     @Column(name = "sell_price")
     private Double sellPrice;
 

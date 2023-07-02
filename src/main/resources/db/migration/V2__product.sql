@@ -21,6 +21,7 @@ PRODUCT_COMPANY_ID INT,
 SUPPLIER_ID INT,
 BUY_PRICE DECIMAL(12,2),
 SELL_PRICE DECIMAL(12,2),
+IS_SERVICE TINYINT(1) DEFAULT 0,
 created_by VARCHAR(100),
 created_at TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
 updated_by VARCHAR(100),
@@ -69,6 +70,6 @@ updated_at TIMESTAMP,
 terminal_id INT
 );
 
-insert into PRODUCT_CATEGORY (name, description) values ('category1', 'description1');
-insert into SUPPLIER (name, address, contact_no) values ('supplier1', 'address1', '2818888555');
-insert into PRODUCT_COMPANY (name, address, contact_no) values ('company1', 'company address1', '5219999666');
+insert into PRODUCT_CATEGORY (name, description) values ('NONE', 'This can be used with any product');
+insert into SUPPLIER (name, address, contact_no) values ('NONE', 'address1', '2818888555');
+insert into PRODUCT_COMPANY (name, address, contact_no) values ('NONE', 'company address1', '5219999666');

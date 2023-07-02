@@ -47,10 +47,10 @@ terminal_id INT
 );
 
 INSERT INTO CUSTOMER (FIRST_NAME, LAST_NAME, FULL_NAME, GENDER, CONTACT_NO, ADDRESS, CREATED_BY)
-VALUES ('Mr', 'General', 'Mr General', 'MALE', '1234567890', '123 Main St, Anytown USA', 'admin');
+VALUES ('Walk', 'In', 'Walk In Male', 'MALE', '1234567890', '123 Main St, Anytown USA', 'admin');
 
 INSERT INTO CUSTOMER (FIRST_NAME, LAST_NAME, FULL_NAME, GENDER, CONTACT_NO, ADDRESS, CREATED_BY)
-VALUES ('Ms', 'General', 'Ms General', 'FEMALE', '9876543210', '456 Maple St, Anytown USA', 'admin');
+VALUES ('Female', 'Walk in', 'Walk In Female', 'FEMALE', '9876543210', '456 Maple St, Anytown USA', 'admin');
 
 
 --CREATE TABLE PURCHASE_ORDER (

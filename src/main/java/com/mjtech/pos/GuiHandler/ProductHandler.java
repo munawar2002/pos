@@ -36,7 +36,8 @@ public class ProductHandler {
                             int supplierId,
                             TextField buyPriceTextField,
                             TextField sellPriceTextField,
-                            TextField quantityTextField) {
+                            TextField quantityTextField,
+                            boolean isService) {
         String code = codeTextField.getText();
         String name = nameTextField.getText();
         Double buyPrice = Double.parseDouble(buyPriceTextField.getText());
@@ -73,6 +74,7 @@ public class ProductHandler {
                 .buyPrice(buyPrice)
                 .sellPrice(sellPrice)
                 .quantity(quantity)
+                .isService(isService)
                 .createdBy(ActiveUser.getActiveUsername())
                 .createdAt(new Date())
                 .build();
@@ -91,7 +93,8 @@ public class ProductHandler {
                             int supplierId,
                             TextField buyPriceTextField,
                             TextField sellPriceTextField,
-                            TextField quantityTextField) {
+                            TextField quantityTextField,
+                            boolean isService) {
         String code = codeTextField.getText();
         String name = nameTextField.getText();
         Double buyPrice = Double.parseDouble(buyPriceTextField.getText());
@@ -120,6 +123,7 @@ public class ProductHandler {
         product.setQuantity(quantity);
         product.setUpdatedBy(ActiveUser.getActiveUsername());
         product.setUpdatedAt(new Date());
+        product.setService(isService);
 
         productRepository.save(product);
 

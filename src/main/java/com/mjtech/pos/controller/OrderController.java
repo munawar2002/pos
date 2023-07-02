@@ -167,7 +167,7 @@ public class OrderController implements ControllerInterface, Initializable {
         }
 
         if(cardRadioBtn.isSelected()) {
-            boolean result = FxmlUtil.callConfirmationAlert(String.format("Have customer paid %s amount by card?", balanceTextField.getText()));
+            boolean result = FxmlUtil.callConfirmationAlert(String.format("Did customer pay $%s by card?", balanceTextField.getText()));
             if(!result) {
                 log.error("Ask customer to pay by card!!");
                 return;
@@ -183,7 +183,7 @@ public class OrderController implements ControllerInterface, Initializable {
             double cashReceived = Double.parseDouble(cashReceivedTextField.getText());
             double totalAmount = Double.parseDouble(totalAmountTextField.getText());
             double cardRemainingAmount = totalAmount - cashReceived;
-            boolean result = FxmlUtil.callConfirmationAlert(String.format("Have customer paid %s amount by card?",
+            boolean result = FxmlUtil.callConfirmationAlert(String.format("Did customer pay $%s by card?",
                     Formats.getDecimalFormat().format(cardRemainingAmount)));
             if(!result) {
                 log.error(String.format("Ask customer to pay %s by card!!", cardRemainingAmount));
@@ -413,7 +413,7 @@ public class OrderController implements ControllerInterface, Initializable {
     }
 
     private void setGeneralCustomer() {
-        List<Customer> customers = customerService.searchCustomer("Mr General", Gender.MALE.name(),
+        List<Customer> customers = customerService.searchCustomer("Walk In", Gender.MALE.name(),
                 "", "");
         if(!customers.isEmpty()) {
             this.selectedCustomer = customers.get(0);

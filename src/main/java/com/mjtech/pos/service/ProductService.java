@@ -94,6 +94,7 @@ public class ProductService {
             dto.setSupplierName(supplier.getName());
             dto.setCategoryName(productCategory.getName());
             dto.setImage(productPhoto == null ? null : productPhoto.getImage());
+            dto.setService(product.isService());
             productDtos.add(dto);
         });
 
