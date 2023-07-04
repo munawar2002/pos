@@ -63,6 +63,9 @@ public class ProductCategoryService {
     public List<ProductCategory> search(String name, String description) {
         if(StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(description)) {
             return productCategoryRepository.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCase(name, description);
+        } else if(StringUtils.isNotEmpty(name) && name.equalsIgnoreCase("NONE")) {
+            var optional =  productCategoryRepository.findByName(name);
+            return optional.map(List::of).orElseGet(List::of);
         } else if(StringUtils.isNotEmpty(name)) {
             return productCategoryRepository.findByNameContainingIgnoreCase(name);
         } else if(StringUtils.isNotEmpty(description)) {

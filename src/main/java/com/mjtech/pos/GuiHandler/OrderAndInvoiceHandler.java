@@ -268,4 +268,10 @@ public class OrderAndInvoiceHandler {
 
         invoiceRepository.save(invoice);
     }
+
+    public void deleteInvoice(int invoiceId) {
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new RuntimeException("Invoice not found with id " + invoiceId));
+        invoiceRepository.delete(invoice);
+    }
 }

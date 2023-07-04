@@ -113,13 +113,13 @@
             </AnchorPane>
             <AnchorPane layoutX="582.0" layoutY="6.0" prefHeight="688.0" prefWidth="612.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
                <children>
-                  <TextField fx:id="codeSearchTextField" layoutX="107.0" layoutY="65.0" prefHeight="26.0" prefWidth="180.0" />
+                  <TextField fx:id="codeSearchTextField" layoutX="107.0" layoutY="65.0" onAction="#searchBtn" prefHeight="26.0" prefWidth="180.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="7.0" layoutY="65.0" prefHeight="26.0" prefWidth="80.0" text="Code:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="nameSearchTextField" layoutX="394.0" layoutY="65.0" prefHeight="26.0" prefWidth="194.0" />
+                  <TextField fx:id="nameSearchTextField" layoutX="394.0" layoutY="65.0" onAction="#searchBtn" prefHeight="26.0" prefWidth="194.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="300.0" layoutY="65.0" prefHeight="26.0" prefWidth="80.0" text="Name:">
                      <font>
                         <Font size="17.0" />
@@ -142,13 +142,13 @@
                         <Font name="Arial Bold" size="25.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="buyPriceSearchTextField" layoutX="107.0" layoutY="155.0" prefHeight="26.0" prefWidth="180.0" />
+                  <TextField fx:id="buyPriceSearchTextField" layoutX="107.0" layoutY="155.0" onAction="#searchBtn" prefHeight="26.0" prefWidth="180.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="3.0" layoutY="155.0" prefHeight="26.0" prefWidth="88.0" text="Buy Price:">
                      <font>
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="sellPriceSearchTextField" layoutX="394.0" layoutY="155.0" prefHeight="26.0" prefWidth="194.0" />
+                  <TextField fx:id="sellPriceSearchTextField" layoutX="394.0" layoutY="155.0" onAction="#searchBtn" prefHeight="26.0" prefWidth="194.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="298.0" layoutY="155.0" prefHeight="26.0" prefWidth="80.0" text="Sell Price:">
                      <font>
                         <Font size="17.0" />
@@ -177,7 +177,7 @@
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="quantitySearchTextField" layoutX="395.0" layoutY="196.0" onAction="#supplierSearchPopup" prefHeight="26.0" prefWidth="80.0" />
+                  <TextField fx:id="quantitySearchTextField" layoutX="395.0" layoutY="196.0" onAction="#searchBtn" prefHeight="26.0" prefWidth="80.0" />
                   <Label alignment="CENTER_RIGHT" layoutX="306.0" layoutY="196.0" prefHeight="26.0" prefWidth="73.0" text="Quantity:">
                      <font>
                         <Font size="17.0" />

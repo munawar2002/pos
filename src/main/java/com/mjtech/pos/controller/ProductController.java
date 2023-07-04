@@ -150,6 +150,7 @@ public class ProductController implements Initializable {
 
         productHandler.saveProduct(codeTextField, nameTextField, selectedCategory.getId(), selectedCompany.getId(),
                 selectedSupplier.getId(), buyPriceTextField, sellPriceTextField, quantityTextField, isServiceCheckbox.isSelected());
+        clearBtn();
         searchBtn();
     }
 
@@ -281,6 +282,7 @@ public class ProductController implements Initializable {
         categorySearchTextField.setText(controller.getSelectedEntity().getName());
         this.selectedSearchCategory = controller.getSelectedEntity();
         companySearchTextField.requestFocus();
+        searchBtn();
     }
 
     public void supplierSearchPopup() {
@@ -291,6 +293,7 @@ public class ProductController implements Initializable {
         if(controller.getSelectedEntity() == null) return;
         supplierSearchTextField.setText(controller.getSelectedEntity().getName());
         this.selectedSearchSupplier = controller.getSelectedEntity();
+        searchBtn();
     }
 
     public void companySearchPopup() {
@@ -302,6 +305,7 @@ public class ProductController implements Initializable {
         companySearchTextField.setText(controller.getSelectedEntity().getName());
         this.selectedSearchCompany = controller.getSelectedEntity();
         buyPriceSearchTextField.requestFocus();
+        searchBtn();
     }
 
     @Override
@@ -310,6 +314,9 @@ public class ProductController implements Initializable {
         productTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
                 this.selectedProduct = productTable.getSelectionModel().getSelectedItem();
+                if(selectedProduct == null) {
+                    return;
+                }
                 nameTextField.setText(selectedProduct.getName());
                 codeTextField.setText(selectedProduct.getCode());
                 categoryTextField.setText(selectedProduct.getCategoryName());
@@ -333,6 +340,32 @@ public class ProductController implements Initializable {
                 }
             }
         });
+
+        isServiceCheckbox.setOnMouseClicked(event -> {
+            if(isServiceCheckbox.isSelected()) {
+                String none = "NONE";
+                categoryTextField.setText(none);
+                supplierTextField.setText(none);
+                companyTextField.setText(none);
+                buyPriceTextField.setText("0.0");
+                quantityTextField.setText("100000");
+                selectedCategory = genericFormHandler.getNone(GenericFormValue.PRODUCT_CATEGORY.getValue());
+                selectedSupplier = genericFormHandler.getNone(GenericFormValue.SUPPLIER.getValue());
+                selectedCompany = genericFormHandler.getNone(GenericFormValue.PRODUCT_COMPANY.getValue());
+            } else {
+                categoryTextField.clear();
+                supplierTextField.clear();
+                companyTextField.clear();
+                quantityTextField.clear();
+                buyPriceTextField.clear();
+                selectedCompany = null;
+                selectedCategory = null;
+                selectedSupplier = null;
+            }
+        });
+
+
+
 
         FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png");
         fileChooser.getExtensionFilters().add(imageFilter);

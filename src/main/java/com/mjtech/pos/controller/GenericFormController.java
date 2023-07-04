@@ -3,6 +3,7 @@ package com.mjtech.pos.controller;
 import com.mjtech.pos.GuiHandler.GenericFormHandler;
 import com.mjtech.pos.constant.GenericFormOperation;
 import com.mjtech.pos.dto.GenericFromDto;
+import com.mjtech.pos.util.ActiveUser;
 import com.mjtech.pos.util.FxmlUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -66,6 +67,10 @@ public class GenericFormController implements Initializable {
     }
 
     public void deleteGeneric() {
+        if(!ActiveUser.isSuperAdmin()) {
+            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
+            return;
+        }
         int selectedId = getSelectedId("delete");
         if(selectedId < 0 ) return;
         boolean confirmedByUser = FxmlUtil.callConfirmationAlert(String.format("Are you sure you want to delete %s %s", formName, nameTextField.getText()));

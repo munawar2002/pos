@@ -21,6 +21,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Controller;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Controller
@@ -88,6 +91,8 @@ public class OrderController implements ControllerInterface, Initializable {
     private Customer selectedCustomer;
     private ProductDto selectedProduct;
     private Integer selectedInvoiceId;
+
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @FXML
     public void saveOrderBtn() {
@@ -260,6 +265,23 @@ public class OrderController implements ControllerInterface, Initializable {
     }
 
     @FXML
+    public void invoiceDeleteBtn() {
+        InvoiceTableDto selectedItem = pendingInvoiceTable.getSelectionModel().getSelectedItem();
+        if(selectedItem == null) {
+            FxmlUtil.callErrorAlert("Please select invoice in pending invoice table to delete!");
+            return;
+        }
+        boolean result = FxmlUtil.callConfirmationAlert("Are you sure you want to delete pending invoice with order number " + selectedItem.getOrderNo());
+        if(result) {
+            orderAndInvoiceHandler.deleteInvoice(selectedItem.getInvoiceId());
+            invoiceClearBtn();
+            invoiceSearchBtn();
+            productTextField.requestFocus();
+        }
+
+    }
+
+    @FXML
     public void invoiceSearchThroughOrderNo() {
         orderAndInvoiceHandler.populatePendingInvoiceTable(orderNoSearchTextField, pendingInvoiceTable);
     }
@@ -276,12 +298,28 @@ public class OrderController implements ControllerInterface, Initializable {
 
     @FXML
     public void productPopup() {
-        ProductPopupController controller = applicationContext.getBean(ProductPopupController.class);
-        controller.setOrderTableDtoList(orderTable.getItems());
-        FxmlUtil.callPopupForm("/fxml/productPopup.fxml", controller, applicationContext);
-        if(controller.getSelectedProduct() == null) return;
-        productTextField.setText(controller.getSelectedProduct().getCode() + " - " + controller.getSelectedProduct().getName());
-        this.selectedProduct = controller.getSelectedProduct();
+        if (StringUtils.isNotEmpty(productTextField.getText())) {
+            Optional<Product> optionalProduct = productRepository.findByCode(productTextField.getText());
+            if (optionalProduct.isPresent()) {
+                Product product = optionalProduct.get();
+                this.selectedProduct = modelMapper.map(product, ProductDto.class);
+                this.selectedProduct.setProductCompanyName(product.getProductCompany().getName());
+                this.selectedProduct.setSupplierName(product.getSupplier().getName());
+                this.selectedProduct.setCategoryName(product.getProductCategory().getName());
+                this.selectedProduct.setService(product.isService());
+                productTextField.setText(this.selectedProduct.getCode() + " - " + this.selectedProduct.getName());
+            } else {
+                FxmlUtil.callErrorAlert("Product not exist with given code "+ productTextField.getText());
+            }
+        } else {
+            ProductPopupController controller = applicationContext.getBean(ProductPopupController.class);
+            controller.setOrderTableDtoList(orderTable.getItems());
+            FxmlUtil.callPopupForm("/fxml/productPopup.fxml", controller, applicationContext);
+            if (controller.getSelectedProduct() == null) return;
+            productTextField.setText(controller.getSelectedProduct().getCode() + " - " + controller.getSelectedProduct().getName());
+            this.selectedProduct = controller.getSelectedProduct();
+        }
+
         quantityTextField.requestFocus();
     }
 
@@ -342,6 +380,9 @@ public class OrderController implements ControllerInterface, Initializable {
 
         cashReceivedTextField.setOnAction(event -> {
             calculateBalanceAmount();
+        });
+        gstTextField.setOnAction(event -> {
+            calculateAndSetTotalDiscount();
         });
         cashReceivedTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
@@ -470,7 +511,7 @@ public class OrderController implements ControllerInterface, Initializable {
         });
 
         // discountPercentTextField to take input only number with precision.
-        cashReceivedTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+        gstTextField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
             String input = event.getCharacter();
             if (!input.matches("[\\d.]")) {
                 event.consume();

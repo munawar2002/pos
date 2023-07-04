@@ -119,4 +119,13 @@ public class GenericFormHandler {
         table.setItems(FXCollections.observableArrayList(genericFromDtos));
     }
 
+    public GenericFromDto getNone(String formName) {
+        String none = "NONE";
+        var list = searchEntity(formName, none);
+        if(list.size() == 1) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
 }

@@ -55,15 +55,15 @@ public class ProductService {
             }
 
             if (categoryId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("categoryId"), categoryId));
+                predicates.add(criteriaBuilder.equal(root.get("productCategory").get("id"), categoryId));
             }
 
             if (companyId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("productCompanyId"), companyId));
+                predicates.add(criteriaBuilder.equal(root.get("productCompany").get("id"), companyId));
             }
 
             if (supplierId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("supplierId"), supplierId));
+                predicates.add(criteriaBuilder.equal(root.get("supplier").get("id"), supplierId));
             }
 
             if (buyPrice != null) {

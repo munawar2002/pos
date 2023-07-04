@@ -1,14 +1,14 @@
 package com.mjtech.pos.GuiHandler;
 
-import com.mjtech.pos.entity.Terminal;
+import com.mjtech.pos.entity.Role;
 import com.mjtech.pos.entity.User;
-import com.mjtech.pos.repository.UserRepository;
+import com.mjtech.pos.entity.UserRole;
+import com.mjtech.pos.repository.RoleRepository;
+import com.mjtech.pos.repository.UserRoleRepository;
 import com.mjtech.pos.service.TerminalService;
 import com.mjtech.pos.service.UserService;
-import com.mjtech.pos.util.ActiveTerminal;
 import com.mjtech.pos.util.ActiveUser;
 import com.mjtech.pos.util.FxmlUtil;
-import javafx.application.Platform;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -17,13 +17,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
 public class LoginHandler {
 
     private final UserService userService;
+    private final UserRoleRepository userRoleRepository;
 
     private final TerminalService terminalService;
 
@@ -56,6 +58,9 @@ public class LoginHandler {
         if(user!= null) {
             Stage stage = (Stage) usernameField.getScene().getWindow();
             FxmlUtil.callMainForm(stage, "/fxml/main.fxml", applicationContext);
+            List<UserRole> userRoles = userRoleRepository.findByUserId(user.getId());
+            List<Role> roles = userRoles.stream().map(UserRole::getRole).collect(Collectors.toList());
+            user.setRoles(roles);
             ActiveUser.setActiveUser(user);
         } else {
             FxmlUtil.callErrorAlert("Username or password is incorrect. Please try again!");
