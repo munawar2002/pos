@@ -48,7 +48,7 @@ public class ProductCompanyController implements ControllerInterface, Initializa
                 nameTextField.setText(selectedProductCompany.getName());
                 addressTextField.setText(selectedProductCompany.getAddress());
                 contactNoTextField.setText(selectedProductCompany.getContactNo());
-                contactPersonTextField.setText(selectedProductCompany.getContactPersonNo());
+                contactPersonTextField.setText(selectedProductCompany.getContactPerson());
             }
         });
     }
@@ -110,6 +110,7 @@ public class ProductCompanyController implements ControllerInterface, Initializa
                 contactNoTextField.getText(),
                 contactPersonTextField.getText());
 
+        selectedProductCompany = null;
         searchProductCompany();
     }
 

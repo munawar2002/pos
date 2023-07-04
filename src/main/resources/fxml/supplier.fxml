@@ -22,7 +22,7 @@
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <Label alignment="CENTER" layoutX="7.0" layoutY="13.0" prefHeight="30.0" prefWidth="660.0" text="Product Company" textFill="#076b29" underline="true">
+                  <Label alignment="CENTER" layoutX="7.0" layoutY="13.0" prefHeight="30.0" prefWidth="660.0" text="Supplier" textFill="#076b29" underline="true">
                      <font>
                         <Font name="Arial Bold" size="25.0" />
                      </font>

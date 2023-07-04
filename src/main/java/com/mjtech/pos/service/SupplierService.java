@@ -22,4 +22,36 @@ public class SupplierService {
         }
     }
 
+    public List<Supplier> findInAllColumns(String search) {
+        if(StringUtils.isNotEmpty(search) ) {
+            return supplierRepository.findByNameOrContactOrAddress(search);
+        } else {
+            return supplierRepository.findAll();
+        }
+    }
+
+    public void saveSupplier(Integer id, String name, String address, String contactNo, String contactPerson) {
+        Supplier supplier;
+        if(id == null) {
+            supplier = Supplier.builder()
+                    .active(true)
+                    .name(name)
+                    .address(address)
+                    .contactNo(contactNo)
+                    .contactPerson(contactPerson)
+                    .build();
+        } else {
+            supplier = supplierRepository.findById(id).orElseThrow(() -> new RuntimeException("Supplier not found with id "+ id));
+            supplier.setName(name);
+            supplier.setAddress(address);
+            supplier.setContactNo(contactNo);
+            supplier.setContactPerson(contactPerson);
+        }
+
+        supplierRepository.save(supplier);
+    }
+
+    public void deleteById(int id) {
+        supplierRepository.deleteById(id);
+    }
 }
