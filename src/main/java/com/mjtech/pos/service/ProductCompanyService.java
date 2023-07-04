@@ -22,4 +22,37 @@ public class ProductCompanyService {
         }
     }
 
+    public List<ProductCompany> findInAllColumns(String search) {
+        if(StringUtils.isNotEmpty(search) ) {
+            return productCompanyRepository.findByNameOrContactOrAddress(search);
+        } else {
+            return productCompanyRepository.findAll();
+        }
+    }
+
+    public void saveProductCompany(Integer id, String name, String address, String contactNo, String contactPerson) {
+        ProductCompany productCompany;
+        if(id == null) {
+            productCompany = ProductCompany.builder()
+                    .active(true)
+                    .name(name)
+                    .address(address)
+                    .contactNo(contactNo)
+                    .contactPerson(contactPerson)
+                    .build();
+        } else {
+            productCompany = productCompanyRepository.findById(id).orElseThrow(() -> new RuntimeException("ProductCompany not found with id "+ id));
+            productCompany.setName(name);
+            productCompany.setAddress(address);
+            productCompany.setContactNo(contactNo);
+            productCompany.setContactPerson(contactPerson);
+        }
+
+        productCompanyRepository.save(productCompany);
+    }
+
+    public void deleteById(int id) {
+        productCompanyRepository.deleteById(id);
+    }
+
 }

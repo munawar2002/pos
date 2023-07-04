@@ -24,6 +24,7 @@
             <items>
               <MenuItem fx:id="productMenuItem" mnemonicParsing="false" onAction="#productForm" text="Product" />
                   <MenuItem fx:id="productMenuItem1" mnemonicParsing="false" onAction="#productCategoryForm" text="Product Category" />
+                  <MenuItem fx:id="productCompanyMenuItem" mnemonicParsing="false" onAction="#productCompanyForm" text="Product Company" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Sales">

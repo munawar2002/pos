@@ -52,6 +52,11 @@ public class MainController {
         FxmlUtil.callForm(salesFormStage, "/fxml/searchInvoice.fxml", applicationContext);
     }
 
+    public void productCompanyForm() throws IOException {
+        Stage productCompanyForm = new Stage();
+        FxmlUtil.callForm(productCompanyForm, "/fxml/productCompany.fxml", applicationContext);
+    }
+
     public void closeApplication() {
         Platform.exit();
     }
