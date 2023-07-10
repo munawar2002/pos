@@ -3,10 +3,11 @@ package com.mjtech.pos.controller;
 import com.mjtech.pos.entity.ProductCompany;
 import com.mjtech.pos.repository.ProductCompanyRepository;
 import com.mjtech.pos.service.ProductCompanyService;
-import com.mjtech.pos.util.ActiveUser;
 import com.mjtech.pos.util.FxmlUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Controller
 public class ProductCompanyController implements ControllerInterface, Initializable {
@@ -34,6 +36,8 @@ public class ProductCompanyController implements ControllerInterface, Initializa
     private ProductCompanyRepository productCompanyRepository;
 
     private ProductCompany selectedProductCompany;
+
+    private Node lastSelectedNode;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -129,10 +133,21 @@ public class ProductCompanyController implements ControllerInterface, Initializa
 //            return;
 //        }
 
-        if(selectedProductCompany == null) {
+        productCompanyTable.getScene().focusOwnerProperty().addListener((observable, oldFocusOwner, newFocusOwner) -> {
+            lastSelectedNode = oldFocusOwner;
+        });
+
+        if (!(lastSelectedNode instanceof TableView<?>) || selectedProductCompany == null) {
             FxmlUtil.callErrorAlert("Please select product company to delete in table.");
             return;
         }
+
+        boolean confirm = FxmlUtil.callConfirmationAlert("Are you sure you want to delete Product Company with name " +
+                selectedProductCompany.getName());
+        if (!confirm) {
+            return;
+        }
+
         productCompanyService.deleteById(selectedProductCompany.getId());
         clearBtn();
         searchProductCompany();

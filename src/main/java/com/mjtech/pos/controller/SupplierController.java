@@ -7,6 +7,7 @@ import com.mjtech.pos.util.ActiveUser;
 import com.mjtech.pos.util.FxmlUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +35,8 @@ public class SupplierController implements ControllerInterface, Initializable {
     private SupplierRepository supplierRepository;
 
     private Supplier selectedSupplier;
+
+    private Node lastSelectedNode;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -129,9 +132,18 @@ public class SupplierController implements ControllerInterface, Initializable {
 //            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
 //            return;
 //        }
+        supplierTable.getScene().focusOwnerProperty().addListener((observable, oldFocusOwner, newFocusOwner) -> {
+            lastSelectedNode = oldFocusOwner;
+        });
 
-        if(selectedSupplier == null) {
-            FxmlUtil.callErrorAlert("Please select supplier to delete in table.");
+        if (!(lastSelectedNode instanceof TableView<?>) || selectedSupplier == null) {
+            FxmlUtil.callErrorAlert("Please select supplier from table to delete.");
+            return;
+        }
+
+        boolean proceed = FxmlUtil.callConfirmationAlert("Are you sure you want to delete Supplier with name " +
+                selectedSupplier.getName());
+        if (!proceed) {
             return;
         }
         supplierService.deleteById(selectedSupplier.getId());
