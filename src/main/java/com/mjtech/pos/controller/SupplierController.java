@@ -125,10 +125,10 @@ public class SupplierController implements ControllerInterface, Initializable {
     }
 
     public void deleteBtn() {
-        if(!ActiveUser.isSuperAdmin()) {
-            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
-            return;
-        }
+//        if(!ActiveUser.isSuperAdmin()) {
+//            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
+//            return;
+//        }
 
         if(selectedSupplier == null) {
             FxmlUtil.callErrorAlert("Please select supplier to delete in table.");

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="693.0" prefWidth="575.0" style="-fx-background-color: lightgray;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mjtech.pos.controller.ProductCompanyController">
+<AnchorPane prefHeight="693.0" prefWidth="575.0" style="-fx-background-color: lightgray;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mjtech.pos.controller.SupplierController">
    <children>
       <AnchorPane layoutX="-1.0" prefHeight="700.0" prefWidth="690.0">
          <children>
@@ -74,7 +74,7 @@
                   </Label>
                   <AnchorPane layoutX="7.0" layoutY="255.0" prefHeight="430.0" prefWidth="660.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
                      <children>
-                        <TableView fx:id="productCompanyTable" layoutX="3.0" layoutY="48.0" prefHeight="378.0" prefWidth="652.0">
+                        <TableView fx:id="supplierTable" layoutX="3.0" layoutY="48.0" prefHeight="378.0" prefWidth="652.0">
                           <columns>
                             <TableColumn prefWidth="204.0" text="Name" />
                             <TableColumn prefWidth="187.0" text="Address" />

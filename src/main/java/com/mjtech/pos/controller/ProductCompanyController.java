@@ -124,10 +124,10 @@ public class ProductCompanyController implements ControllerInterface, Initializa
     }
 
     public void deleteBtn() {
-        if(!ActiveUser.isSuperAdmin()) {
-            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
-            return;
-        }
+//        if(!ActiveUser.isSuperAdmin()) {
+//            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
+//            return;
+//        }
 
         if(selectedProductCompany == null) {
             FxmlUtil.callErrorAlert("Please select product company to delete in table.");
