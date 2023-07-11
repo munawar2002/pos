@@ -3,7 +3,6 @@ package com.mjtech.pos.controller;
 import com.mjtech.pos.entity.Supplier;
 import com.mjtech.pos.repository.SupplierRepository;
 import com.mjtech.pos.service.SupplierService;
-import com.mjtech.pos.util.ActiveUser;
 import com.mjtech.pos.util.FxmlUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -68,7 +67,22 @@ public class SupplierController implements ControllerInterface, Initializable {
                 "Contact No.", "contactNo",
                 "Contact Person", "contactPerson");
 
-        FxmlUtil.populateTableView(supplierTable, suppliers, columnMap);
+        FxmlUtil.populateTableView(supplierTable, suppliers, columnMap, this::deleteSupplier);
+    }
+
+    public void deleteSupplier(Supplier object) {
+//        if(!ActiveUser.isSuperAdmin()) {
+//            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
+//            return;
+//        }
+        boolean proceed = FxmlUtil.callConfirmationAlert("Are you sure you want to delete Supplier with name " +
+                object.getName());
+        if (!proceed) {
+            return;
+        }
+        supplierService.deleteById(object.getId());
+        clearBtn();
+        searchSupplier();
     }
 
     public void searchBtn() {
@@ -125,29 +139,5 @@ public class SupplierController implements ControllerInterface, Initializable {
         contactNoTextField.clear();
         supplierTable.getItems().clear();
         selectedSupplier = null;
-    }
-
-    public void deleteBtn() {
-//        if(!ActiveUser.isSuperAdmin()) {
-//            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
-//            return;
-//        }
-        supplierTable.getScene().focusOwnerProperty().addListener((observable, oldFocusOwner, newFocusOwner) -> {
-            lastSelectedNode = oldFocusOwner;
-        });
-
-        if (!(lastSelectedNode instanceof TableView<?>) || selectedSupplier == null) {
-            FxmlUtil.callErrorAlert("Please select supplier from table to delete.");
-            return;
-        }
-
-        boolean proceed = FxmlUtil.callConfirmationAlert("Are you sure you want to delete Supplier with name " +
-                selectedSupplier.getName());
-        if (!proceed) {
-            return;
-        }
-        supplierService.deleteById(selectedSupplier.getId());
-        clearBtn();
-        searchSupplier();
     }
 }

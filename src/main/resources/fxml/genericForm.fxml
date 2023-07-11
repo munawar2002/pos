@@ -12,7 +12,7 @@
    <children>
       <AnchorPane prefHeight="601.0" prefWidth="700.0">
          <children>
-            <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="582.0" prefWidth="676.0" style="-fx-border-color: green;">
+            <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="582.0" prefWidth="676.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
                <children>
                   <Label fx:id="entityNameLabel" layoutX="4.0" layoutY="27.0" prefHeight="45.0" prefWidth="672.0" style="-fx-alignment: center;" text="Enity Name" textAlignment="CENTER">
                      <font>
@@ -31,15 +31,7 @@
                         <Font size="23.0" />
                      </font>
                   </Label>
-                  <ButtonBar layoutX="151.0" layoutY="169.0" prefHeight="45.0" prefWidth="505.0">
-                    <buttons>
-                        <Button fx:id="saveBtn" mnemonicParsing="false" onAction="#saveGeneric" prefHeight="26.0" prefWidth="140.0" text="Save" />
-                        <Button fx:id="editBtn" mnemonicParsing="false" onAction="#editGeneric" text="Edit" />
-                        <Button fx:id="clearBtn" mnemonicParsing="false" onAction="#clearGeneric" text="Clear" />
-                      <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteGeneric" prefHeight="26.0" text="Delete" />
-                    </buttons>
-                  </ButtonBar>
-                  <AnchorPane layoutX="11.0" layoutY="225.0" prefHeight="349.0" prefWidth="656.0" style="-fx-border-color: green;">
+                  <AnchorPane layoutX="11.0" layoutY="225.0" prefHeight="349.0" prefWidth="656.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
                      <children>
                         <TextField fx:id="nameSearchField" layoutX="137.0" layoutY="14.0" prefHeight="26.0" prefWidth="320.0" />
                         <TextField fx:id="descriptionSearchField" layoutX="137.0" layoutY="47.0" prefHeight="26.0" prefWidth="505.0" />
@@ -59,6 +51,17 @@
                               <Font name="System Bold" size="14.0" />
                            </font>
                         </Button>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="14.0" layoutY="166.0" prefHeight="45.0" prefWidth="656.0" style="-fx-border-color: green; -fx-border-width: 2px 2px 2px 2px;">
+                     <children>
+                        <ButtonBar layoutX="75.0" layoutY="1.0" prefHeight="45.0" prefWidth="554.0">
+                          <buttons>
+                              <Button fx:id="saveBtn" mnemonicParsing="false" onAction="#saveGeneric" prefHeight="25.0" prefWidth="207.0" text="Save" />
+                              <Button fx:id="editBtn" mnemonicParsing="false" onAction="#editGeneric" text="Edit" />
+                              <Button fx:id="clearBtn" mnemonicParsing="false" onAction="#clearGeneric" text="Clear" />
+                          </buttons>
+                        </ButtonBar>
                      </children>
                   </AnchorPane>
                </children>

@@ -11,6 +11,7 @@ import com.mjtech.pos.entity.*;
 import com.mjtech.pos.mapper.DtoMapper;
 import com.mjtech.pos.repository.*;
 import com.mjtech.pos.service.GeneralLedgerService;
+import com.mjtech.pos.service.JasperReportService;
 import com.mjtech.pos.service.OrderService;
 import com.mjtech.pos.service.ProductService;
 import com.mjtech.pos.util.FxmlUtil;
@@ -57,6 +58,9 @@ public class OrderAndInvoiceHandler {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private JasperReportService jasperReportService;
+
     @Value("${tax.percentage}")
     private Double taxPercentage;
 
@@ -99,7 +103,7 @@ public class OrderAndInvoiceHandler {
                     "Price", "price",
                     "Total", "total");
 
-            FxmlUtil.populateTableView(invoiceTable, orderTableDtos, columnMap);
+            FxmlUtil.populateTableView(invoiceTable, orderTableDtos, columnMap, null);
 
             double totalInvoiceAmount = orderTableDtos.stream().mapToDouble(t -> Double.parseDouble(t.getTotal())).sum();
             totalAmountTextField.setText(Formats.getDecimalFormat().format(totalInvoiceAmount));
@@ -139,7 +143,7 @@ public class OrderAndInvoiceHandler {
                     "Price", "price",
                     "Total", "total");
 
-            FxmlUtil.populateTableView(orderTable, orderTableDtos, columnMap);
+            FxmlUtil.populateTableView(orderTable, orderTableDtos, columnMap, null);
 
             orderRemarksTextField.setText(order.getRemarks());
         } catch (Exception e) {
@@ -186,7 +190,7 @@ public class OrderAndInvoiceHandler {
                     "Total Amount", "amount",
                     "Remarks", "remarks");
 
-            FxmlUtil.populateTableView(pendingInvoiceTableDtoTable, pendingInvoiceTableDtoList, columnMap);
+            FxmlUtil.populateTableView(pendingInvoiceTableDtoTable, pendingInvoiceTableDtoList, columnMap, null);
         } catch (Exception e) {
             String errorMessage = String.format("ReceptionForm: Failed while populating pending invoice table with orderNo %s",
                     orderNoSearchTextField.getText());
@@ -217,6 +221,7 @@ public class OrderAndInvoiceHandler {
 
 
             // TODO: print invoice
+            jasperReportService.generateReport("/reports/Invoice.jrxml", new HashMap<>());
         } catch (Exception e) {
             String errorMessage = String.format("ReceptionForm: Failed while generating invoice for invoiceId %d",
                     invoiceDto.getInvoiceId());

@@ -10,10 +10,10 @@ import com.mjtech.pos.mapper.DtoMapper;
 import com.mjtech.pos.service.ProductCategoryService;
 import com.mjtech.pos.service.ProductCompanyService;
 import com.mjtech.pos.service.SupplierService;
+import com.mjtech.pos.util.ActiveUser;
+import com.mjtech.pos.util.FxmlUtil;
 import javafx.collections.FXCollections;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationContext;
@@ -86,10 +86,10 @@ public class GenericFormHandler {
             genericFromDtos = DtoMapper.mapToGenericFormDtos(objects);
         }
 
-        populateTable(genericFromDtos, table);
+        populateTable(genericFromDtos, table, formName);
     }
 
-    private void populateTable(List<GenericFromDto> genericFromDtos, TableView<GenericFromDto> table) {
+    private void populateTable(List<GenericFromDto> genericFromDtos, TableView<GenericFromDto> table, String formName) {
         if (genericFromDtos == null) {
             return;
         }
@@ -97,7 +97,6 @@ public class GenericFormHandler {
         Map<String, String> columnsMap = new LinkedHashMap<>();
         columnsMap.put("Name", "name");
         columnsMap.put("Description", "description");
-
 
         for (Map.Entry<String, String> entry : columnsMap.entrySet()) {
             boolean columnAlreadyExist = table.getColumns().stream().anyMatch(col -> col.getText().equals(entry.getKey()));
@@ -107,7 +106,7 @@ public class GenericFormHandler {
                 if(newColumn.getText().equals("Name")) {
                     newColumn.setPrefWidth(200);
                 } else {
-                    newColumn.setPrefWidth(400);
+                    newColumn.setPrefWidth(360);
                 }
                 table.getColumns().add(newColumn);
 
@@ -115,6 +114,34 @@ public class GenericFormHandler {
         }
 
         table.getColumns().forEach(col -> col.setCellValueFactory(new PropertyValueFactory<>(col.getText().toLowerCase())));
+
+        TableColumn<GenericFromDto, Void> deleteColumn = new TableColumn<>("Action");
+        deleteColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button deleteButton = new Button("Delete");
+
+            {
+                deleteButton.setOnAction(event -> {
+                    // Get the item associated with the clicked delete button
+                    GenericFromDto record = getTableView().getItems().get(getIndex());
+                    boolean confirmedByUser = FxmlUtil.callConfirmationAlert(String.format("Are you sure you want to delete %s %s", formName, record.getName()));
+                    if(!confirmedByUser) return;
+                    record.setAction("DELETE");
+                    performOperation(GenericFormOperation.DELETE, new TextField(), new TextField(), formName, record.getId(), table);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (!empty) {
+                    setGraphic(deleteButton);
+                } else {
+                    setGraphic(null);
+                }
+            }
+        });
+
+        table.getColumns().add(deleteColumn);
 
         table.setItems(FXCollections.observableArrayList(genericFromDtos));
     }

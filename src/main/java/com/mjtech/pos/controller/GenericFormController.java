@@ -66,24 +66,15 @@ public class GenericFormController implements Initializable {
         genericTable.getItems().clear();
     }
 
-    public void deleteGeneric() {
-        if(!ActiveUser.isSuperAdmin()) {
-            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
-            return;
-        }
-        int selectedId = getSelectedId("delete");
-        if(selectedId < 0 ) return;
-        boolean confirmedByUser = FxmlUtil.callConfirmationAlert(String.format("Are you sure you want to delete %s %s", formName, nameTextField.getText()));
-        if(!confirmedByUser) return;
-        genericFormHandler.performOperation(GenericFormOperation.DELETE, nameTextField, descriptionTextField, formName, selectedId, genericTable);
-    }
-
     public void searchGeneric() {
         genericFormHandler.search(formName, nameSearchField, descriptionSearchField, genericTable);
     }
 
     public void tableMouseClick() {
         GenericFromDto selectedItem = genericTable.getSelectionModel().getSelectedItem();
+        if(selectedItem == null) {
+            return;
+        }
         nameTextField.setText(selectedItem.getName());
         descriptionTextField.setText(selectedItem.getDescription());
     }

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @UtilityClass
 public class FxmlUtil {
@@ -160,13 +161,41 @@ public class FxmlUtil {
         return null;
     }
 
-    public <T> void populateTableView(TableView<T> tableView, List<T> items, Map<String, String> columnMap) {
+    public <T> void populateTableView(TableView<T> tableView, List<T> items, Map<String, String> columnMap,
+            Consumer<T> deleteHandler) {
         for (Map.Entry<String,String> entry : columnMap.entrySet()) {
             tableView.getColumns().forEach(col -> {
                 if(col.getText().equalsIgnoreCase(entry.getKey())) {
                     col.setCellValueFactory(new PropertyValueFactory<>(entry.getValue()));
                 }
             });
+        }
+
+        if (deleteHandler != null) {
+            TableColumn<T, Void> deleteColumn = new TableColumn<>("Action");
+            deleteColumn.setCellFactory(param -> new TableCell<>() {
+                private final Button deleteButton = new Button("Delete");
+
+                {
+                    deleteButton.setOnAction(event -> {
+                        // Get the item associated with the clicked delete button
+                        T record = getTableView().getItems().get(getIndex());
+                        deleteHandler.accept(record);
+                    });
+                }
+
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (!empty) {
+                        setGraphic(deleteButton);
+                    } else {
+                        setGraphic(null);
+                    }
+                }
+            });
+
+            tableView.getColumns().add(deleteColumn);
         }
 
         tableView.setItems(FXCollections.observableList(items));

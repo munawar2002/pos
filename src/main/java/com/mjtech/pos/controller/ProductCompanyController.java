@@ -7,7 +7,6 @@ import com.mjtech.pos.util.FxmlUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +17,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Controller
 public class ProductCompanyController implements ControllerInterface, Initializable {
@@ -69,7 +67,7 @@ public class ProductCompanyController implements ControllerInterface, Initializa
                 "Contact No.", "contactNo",
                 "Contact Person", "contactPerson");
 
-        FxmlUtil.populateTableView(productCompanyTable, productCompanies, columnMap);
+        FxmlUtil.populateTableView(productCompanyTable, productCompanies, columnMap, this::deleteProductCompany);
     }
 
     public void searchBtn() {
@@ -127,28 +125,19 @@ public class ProductCompanyController implements ControllerInterface, Initializa
         selectedProductCompany = null;
     }
 
-    public void deleteBtn() {
+    public void deleteProductCompany(ProductCompany object) {
 //        if(!ActiveUser.isSuperAdmin()) {
 //            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
 //            return;
 //        }
 
-        productCompanyTable.getScene().focusOwnerProperty().addListener((observable, oldFocusOwner, newFocusOwner) -> {
-            lastSelectedNode = oldFocusOwner;
-        });
-
-        if (!(lastSelectedNode instanceof TableView<?>) || selectedProductCompany == null) {
-            FxmlUtil.callErrorAlert("Please select product company to delete in table.");
-            return;
-        }
-
         boolean confirm = FxmlUtil.callConfirmationAlert("Are you sure you want to delete Product Company with name " +
-                selectedProductCompany.getName());
+                object.getName());
         if (!confirm) {
             return;
         }
 
-        productCompanyService.deleteById(selectedProductCompany.getId());
+        productCompanyService.deleteById(object.getId());
         clearBtn();
         searchProductCompany();
     }

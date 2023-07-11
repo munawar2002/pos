@@ -182,7 +182,7 @@ public class ProductHandler {
                 "Buy", "buyPrice",
                 "Quantity", "quantity");
 
-        FxmlUtil.populateTableView(productTableView, productDtos, columnMap);
+        FxmlUtil.populateTableView(productTableView, productDtos, columnMap, null);
     }
 
     public void saveProductPhoto(int productId, byte[] picBytes) {

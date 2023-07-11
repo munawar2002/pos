@@ -87,7 +87,7 @@ public class RefundAndExchangeHandler {
                     "Cash Rcvd", "cashReceived",
                     "Card Rcvd", "cardReceived");
 
-            FxmlUtil.populateTableView(invoiceTable, pendingInvoiceTableDtoList, columnMap);
+            FxmlUtil.populateTableView(invoiceTable, pendingInvoiceTableDtoList, columnMap, null);
         } catch (Exception e) {
             String errorMessage = String.format("ReceptionForm: Failed while populating pending invoice table with orderNo %s",
                     "");
@@ -112,7 +112,7 @@ public class RefundAndExchangeHandler {
                     "Total", "total",
                     "Select", "selected");
 
-            FxmlUtil.populateTableView(invoiceDetailTable, orderTableDtos, columnMap);
+            FxmlUtil.populateTableView(invoiceDetailTable, orderTableDtos, columnMap, null);
         } catch (Exception e) {
             String errorMessage = String.format("RefundForm: Failed while populating invoice detail table for invoiceId %d", invoice.getId());
             log.error(errorMessage, e);
@@ -151,7 +151,7 @@ public class RefundAndExchangeHandler {
                 "Price", "price",
                 "Total", "total");
 
-        FxmlUtil.populateTableView(refundTable, orderTableDtos, columnMap);
+        FxmlUtil.populateTableView(refundTable, orderTableDtos, columnMap, null);
     }
 
     public void generateRefundInvoice(Invoice refundInvoice, TableView<OrderTableDto> refundTable) {
