@@ -70,7 +70,7 @@ public class SupplierController implements ControllerInterface, Initializable {
         FxmlUtil.populateTableView(supplierTable, suppliers, columnMap, this::deleteSupplier);
     }
 
-    public void deleteSupplier(Supplier object) {
+    public boolean deleteSupplier(Supplier object) {
 //        if(!ActiveUser.isSuperAdmin()) {
 //            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
 //            return;
@@ -78,11 +78,12 @@ public class SupplierController implements ControllerInterface, Initializable {
         boolean proceed = FxmlUtil.callConfirmationAlert("Are you sure you want to delete Supplier with name " +
                 object.getName());
         if (!proceed) {
-            return;
+            return false;
         }
         supplierService.deleteById(object.getId());
         clearBtn();
         searchSupplier();
+        return false;
     }
 
     public void searchBtn() {

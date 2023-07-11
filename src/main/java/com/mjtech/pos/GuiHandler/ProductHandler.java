@@ -141,6 +141,15 @@ public class ProductHandler {
                 product.getCode(), product.getName()));
     }
 
+    public boolean delete(ProductDto product) {
+        boolean proceed = FxmlUtil.callConfirmationAlert("Are you sure you want to delete product with name " + product.getName());
+        if(!proceed) {
+            return true;
+        }
+        deleteProduct(product.getId());
+        return true;
+    }
+
     public void searchProduct(TextField codeTextField,
                               TextField nameTextField,
                               Integer categoryId,
@@ -182,7 +191,7 @@ public class ProductHandler {
                 "Buy", "buyPrice",
                 "Quantity", "quantity");
 
-        FxmlUtil.populateTableView(productTableView, productDtos, columnMap, null);
+        FxmlUtil.populateTableView(productTableView, productDtos, columnMap, this::delete);
     }
 
     public void saveProductPhoto(int productId, byte[] picBytes) {

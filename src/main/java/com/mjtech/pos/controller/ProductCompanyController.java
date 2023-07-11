@@ -125,7 +125,7 @@ public class ProductCompanyController implements ControllerInterface, Initializa
         selectedProductCompany = null;
     }
 
-    public void deleteProductCompany(ProductCompany object) {
+    public boolean deleteProductCompany(ProductCompany object) {
 //        if(!ActiveUser.isSuperAdmin()) {
 //            FxmlUtil.callErrorAlert("You don't have access to delete this entry. Please contact admin!");
 //            return;
@@ -134,11 +134,12 @@ public class ProductCompanyController implements ControllerInterface, Initializa
         boolean confirm = FxmlUtil.callConfirmationAlert("Are you sure you want to delete Product Company with name " +
                 object.getName());
         if (!confirm) {
-            return;
+            return false;
         }
 
         productCompanyService.deleteById(object.getId());
         clearBtn();
         searchProductCompany();
+        return false;
     }
 }

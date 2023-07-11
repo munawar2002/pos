@@ -196,16 +196,6 @@ public class ProductController implements Initializable {
         productTable.getItems().clear();
     }
 
-    public void deleteBtn() {
-        if (productTable.getSelectionModel().getSelectedItem() == null) {
-            FxmlUtil.callErrorAlert("Please select product from table to delete.");
-            return;
-        }
-
-        productHandler.deleteProduct(selectedProduct.getId());
-        searchBtn();
-    }
-
     public void browseBtn() throws IOException {
         if (productTable.getSelectionModel().getSelectedItem() == null) {
             FxmlUtil.callErrorAlert("Please select product from table to upload a picture.");
@@ -363,9 +353,6 @@ public class ProductController implements Initializable {
                 selectedSupplier = null;
             }
         });
-
-
-
 
         FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png");
         fileChooser.getExtensionFilters().add(imageFilter);

@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 @UtilityClass
 public class FxmlUtil {
@@ -162,7 +162,7 @@ public class FxmlUtil {
     }
 
     public <T> void populateTableView(TableView<T> tableView, List<T> items, Map<String, String> columnMap,
-            Consumer<T> deleteHandler) {
+                                      Function<T, Boolean> deleteHandler) {
         for (Map.Entry<String,String> entry : columnMap.entrySet()) {
             tableView.getColumns().forEach(col -> {
                 if(col.getText().equalsIgnoreCase(entry.getKey())) {
@@ -180,7 +180,10 @@ public class FxmlUtil {
                     deleteButton.setOnAction(event -> {
                         // Get the item associated with the clicked delete button
                         T record = getTableView().getItems().get(getIndex());
-                        deleteHandler.accept(record);
+                        Boolean result = deleteHandler.apply(record);
+                        if (result) {
+                            getTableView().getItems().remove(getIndex());
+                        }
                     });
                 }
 
