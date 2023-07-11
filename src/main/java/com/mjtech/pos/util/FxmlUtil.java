@@ -10,7 +10,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import lombok.experimental.UtilityClass;
@@ -172,8 +171,8 @@ public class FxmlUtil {
         }
 
         if (deleteHandler != null) {
-            TableColumn<T, Void> deleteColumn = new TableColumn<>("Action");
-            deleteColumn.setCellFactory(param -> new TableCell<>() {
+            TableColumn<T, Void> actionColumn = new TableColumn<>("Action");
+            actionColumn.setCellFactory(param -> new TableCell<>() {
                 private final Button deleteButton = new Button("Delete");
 
                 {
@@ -198,7 +197,10 @@ public class FxmlUtil {
                 }
             });
 
-            tableView.getColumns().add(deleteColumn);
+            boolean alreadyAdded = tableView.getColumns().stream().anyMatch(c -> c.getText().contains("Action"));
+            if(!alreadyAdded) {
+                tableView.getColumns().add(actionColumn);
+            }
         }
 
         tableView.setItems(FXCollections.observableList(items));
