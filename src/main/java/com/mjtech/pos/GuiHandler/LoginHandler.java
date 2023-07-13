@@ -3,7 +3,7 @@ package com.mjtech.pos.GuiHandler;
 import com.mjtech.pos.entity.Role;
 import com.mjtech.pos.entity.User;
 import com.mjtech.pos.entity.UserRole;
-import com.mjtech.pos.repository.RoleRepository;
+import com.mjtech.pos.executor.Executor;
 import com.mjtech.pos.repository.UserRoleRepository;
 import com.mjtech.pos.service.TerminalService;
 import com.mjtech.pos.service.UserService;
@@ -13,10 +13,13 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,10 @@ public class LoginHandler {
     private final UserRoleRepository userRoleRepository;
 
     private final TerminalService terminalService;
+
+    @Autowired
+    @Qualifier("databaseBackupExecutor")
+    private Executor databaseBackupExecutor;
 
     private final ConfigurableApplicationContext applicationContext;
 
@@ -54,6 +61,8 @@ public class LoginHandler {
 //        }
 //
 //        ActiveTerminal.setTerminal(currentTerminal);
+
+        databaseBackupExecutor.execute(new HashMap<>());
 
         if(user!= null) {
             Stage stage = (Stage) usernameField.getScene().getWindow();

@@ -170,6 +170,12 @@ public class FxmlUtil {
             });
         }
 
+        addActionButtonsInTable(tableView, deleteHandler);
+
+        tableView.setItems(FXCollections.observableList(items));
+    }
+
+    private static <T> void addActionButtonsInTable(TableView<T> tableView, Function<T, Boolean> deleteHandler) {
         if (deleteHandler != null) {
             TableColumn<T, Void> actionColumn = new TableColumn<>("Action");
             actionColumn.setCellFactory(param -> new TableCell<>() {
@@ -202,8 +208,6 @@ public class FxmlUtil {
                 tableView.getColumns().add(actionColumn);
             }
         }
-
-        tableView.setItems(FXCollections.observableList(items));
     }
 
 }
