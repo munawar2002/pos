@@ -1,12 +1,11 @@
 package com.mjtech.pos.executor;
 
 import com.mjtech.pos.constant.Constants;
+import com.mjtech.pos.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
@@ -26,7 +25,7 @@ public class ShellScriptExecutor implements Executor {
             }
 
             // Path to the shell script
-            String scriptPath = getResourceFilePath("classpath:"+fileName);
+            String scriptPath = Util.getResourceFilePath("classpath:"+fileName);
             // Create the process builder
             ProcessBuilder processBuilder = new ProcessBuilder(scriptPath);
 
@@ -67,8 +66,4 @@ public class ShellScriptExecutor implements Executor {
         }
     }
 
-    public String getResourceFilePath(String resourcePath) throws IOException {
-        File file = ResourceUtils.getFile(resourcePath);
-        return file.getAbsolutePath();
-    }
 }
