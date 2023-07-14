@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Component
@@ -62,7 +63,12 @@ public class LoginHandler {
 //
 //        ActiveTerminal.setTerminal(currentTerminal);
 
-        databaseBackupExecutor.execute(new HashMap<>());
+
+        CompletableFuture.runAsync(() -> {
+            // Perform your process here
+            // This task will be executed asynchronously
+            databaseBackupExecutor.execute(new HashMap<>());
+        });
 
         if(user!= null) {
             Stage stage = (Stage) usernameField.getScene().getWindow();
