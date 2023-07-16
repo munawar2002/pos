@@ -12,7 +12,6 @@ import com.google.api.services.drive.model.*;
 import com.google.api.services.drive.model.File;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.mjtech.pos.constant.DatabaseBackupStatus;
-import com.mjtech.pos.util.Util;
 
 import java.io.*;
 
@@ -26,13 +25,14 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 
 import com.google.auth.oauth2.GoogleCredentials;
+import org.springframework.util.ResourceUtils;
 
 
 @Slf4j
 public class GoogleDriveUploader {
 
     private static final String APPLICATION_NAME = "POS-Backup";
-    private static final String CREDENTIALS_FILE_PATH = "src/main/resources/client_secret2.json";
+    private static final String CREDENTIALS_FILE_PATH = "client_secret2.json";
 
 
     /**
@@ -47,7 +47,21 @@ public class GoogleDriveUploader {
         var sharingStatus = DatabaseBackupStatus.FAILED;
         var apiResponse = new StringBuilder();
 
-        String clientSecretFilePath = Util.getResourceFilePath(CREDENTIALS_FILE_PATH);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(CREDENTIALS_FILE_PATH);
+        java.io.File tempFile = java.io.File.createTempFile("secret", ".json");
+        tempFile.deleteOnExit();
+
+        try (OutputStream outputStream = new FileOutputStream(tempFile)) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        }
+
+        // Provide executable permissions to the temporary file (optional but may be necessary)
+        tempFile.setExecutable(true);
+        String clientSecretFilePath = tempFile.getAbsolutePath();
         System.setProperty("GOOGLE_APPLICATION_CREDENTIALS", clientSecretFilePath);
 
         GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(clientSecretFilePath))

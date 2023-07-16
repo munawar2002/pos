@@ -16,9 +16,4 @@ public class Util {
                 String.format("%02d", today.getMonth().getValue()) + "-" +
                 today.getYear() % 100;
     }
-
-    public String getResourceFilePath(String resourcePath) throws IOException {
-        File file = ResourceUtils.getFile(resourcePath);
-        return file.getAbsolutePath();
-    }
 }
