@@ -11,6 +11,7 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.*;
 import com.google.api.services.drive.model.File;
 import com.google.auth.http.HttpCredentialsAdapter;
+import com.mjtech.pos.constant.DatabaseBackupStatus;
 import com.mjtech.pos.util.Util;
 
 import java.io.*;
@@ -40,10 +41,12 @@ public class GoogleDriveUploader {
      * @return Inserted file metadata if successful, {@code null} otherwise.
      * @throws IOException if service account credentials file not found.
      */
-    public String uploadBasic(java.io.File file) throws IOException {
-        // Load pre-authorized user credentials from the environment.
-        // TODO(developer) - See https://developers.google.com/identity for
-        // guides on implementing OAuth2 for your application.
+    public Map<String, String> uploadBasic(java.io.File file) throws IOException {
+        var response = new HashMap<String, String>();
+        var uploadStatus = DatabaseBackupStatus.FAILED;
+        var sharingStatus = DatabaseBackupStatus.FAILED;
+        var apiResponse = new StringBuilder();
+
         String clientSecretFilePath = Util.getResourceFilePath(CREDENTIALS_FILE_PATH);
         System.setProperty("GOOGLE_APPLICATION_CREDENTIALS", clientSecretFilePath);
 
@@ -68,7 +71,12 @@ public class GoogleDriveUploader {
             File uploadedFile = drive.files().create(fileMetadata, mediaContent)
                     .setFields("id")
                     .execute();
-            log.info("Backup File ID: " + uploadedFile.getId());
+            String backupUploadResponse = "Backup File ID: " + uploadedFile.getId();
+            log.info(backupUploadResponse);
+            apiResponse.append(backupUploadResponse);
+            response.put("fileId", uploadedFile.getId());
+            uploadStatus = DatabaseBackupStatus.PASS;
+            apiResponse.append("Upload Successful. FileId = ").append(uploadedFile.getId());
 
             // downloadFileFromDrive(drive, uploadedFile);
 
@@ -81,12 +89,17 @@ public class GoogleDriveUploader {
 
             // Add the permission to the file
             drive.permissions().create(uploadedFile.getId(), permission).execute();
-
-            return uploadedFile.getId();
+            sharingStatus = DatabaseBackupStatus.PASS;
+            apiResponse.append("Sharing Successful.").append(uploadedFile.getId());
+            return response;
         } catch (GoogleJsonResponseException e) {
-            // TODO(developer) - handle error appropriately
             log.error("Unable to upload file: " + e.getDetails(), e);
-            throw e;
+            apiResponse.append(e.getDetails()).append(Arrays.toString(e.getStackTrace()));
+            return response;
+        } finally {
+            response.put("uploadStatus", uploadStatus.name());
+            response.put("sharingStatus", sharingStatus.name());
+            response.put("backupResponse", apiResponse.toString());
         }
     }
 

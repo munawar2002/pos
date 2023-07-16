@@ -5,6 +5,7 @@ import com.mjtech.pos.entity.User;
 import com.mjtech.pos.entity.UserRole;
 import com.mjtech.pos.executor.Executor;
 import com.mjtech.pos.repository.UserRoleRepository;
+import com.mjtech.pos.service.DatabaseBackupService;
 import com.mjtech.pos.service.TerminalService;
 import com.mjtech.pos.service.UserService;
 import com.mjtech.pos.util.ActiveUser;
@@ -19,6 +20,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -30,7 +32,7 @@ public class LoginHandler {
 
     private final UserService userService;
     private final UserRoleRepository userRoleRepository;
-
+    private final DatabaseBackupService databaseBackupService;
     private final TerminalService terminalService;
 
     @Autowired
@@ -64,11 +66,6 @@ public class LoginHandler {
 //        ActiveTerminal.setTerminal(currentTerminal);
 
 
-        CompletableFuture.runAsync(() -> {
-            // Perform your process here
-            // This task will be executed asynchronously
-            databaseBackupExecutor.execute(new HashMap<>());
-        });
 
         if(user!= null) {
             Stage stage = (Stage) usernameField.getScene().getWindow();
@@ -77,10 +74,26 @@ public class LoginHandler {
             List<Role> roles = userRoles.stream().map(UserRole::getRole).collect(Collectors.toList());
             user.setRoles(roles);
             ActiveUser.setActiveUser(user);
+            backupDb();
         } else {
             FxmlUtil.callErrorAlert("Username or password is incorrect. Please try again!");
             passwordField.clear();
             passwordField.requestFocus();
+        }
+    }
+
+    private void backupDb() {
+        boolean backupExist = databaseBackupService.isBackupExist(new Date());
+
+        if(!backupExist) {
+            CompletableFuture.runAsync(() -> {
+                // This task will be executed asynchronously
+                try {
+                    databaseBackupExecutor.execute(new HashMap<>());
+                } catch (Exception e) {
+                    // ignore exception
+                }
+            });
         }
     }
 
