@@ -219,9 +219,8 @@ public class OrderAndInvoiceHandler {
             // create ledger entries
             generalLedgerService.createInvoiceSellLedgerEntry(invoice);
 
-
             // TODO: print invoice
-            jasperReportService.generateReport("/reports/Invoice.jrxml", new HashMap<>());
+            //jasperReportService.generateReport("/reports/Invoice.jrxml", new HashMap<>());
         } catch (Exception e) {
             String errorMessage = String.format("ReceptionForm: Failed while generating invoice for invoiceId %d",
                     invoiceDto.getInvoiceId());
